@@ -18,8 +18,8 @@ endif
 
 # use customized config file
 include $(config)
-#include mshadow/make/mshadow.mk
-#include $(DMLC_CORE)/make/dmlc.mk
+include mshadow/make/mshadow.mk
+include $(DMLC_CORE)/make/dmlc.mk
 unexport NO_OPENMP
 
 # all tge possible warning tread
