@@ -9,7 +9,7 @@ if [ ! -d rabit ]; then
 fi
 
 if [ ! -d dmlc-core ]; then
-    git clone https://github.com/dmlc/dmlc-core.git
+    git clone https://github.com/dato-code/dmlc-core.git
 fi
 
 
