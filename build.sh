@@ -1,7 +1,7 @@
 #! /bin/bash
 
 if [ ! -d mshadow ]; then
-    git clone https://github.com/dmlc/mshadow.git
+    git clone https://github.com/dato-code/mshadow.git
 fi
 
 if [ ! -d rabit ]; then
