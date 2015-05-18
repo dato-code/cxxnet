@@ -15,7 +15,7 @@ export CXX = g++
 export NVCC = nvcc
 
 # whether use CUDA during compile
-USE_CUDA = 1
+USE_CUDA = 0
 
 # add the path to CUDA libary to link and compile flag
 # if you have already add them to enviroment variable, leave it as NONE
@@ -55,7 +55,7 @@ RABIT_PATH = rabit
 # use openmp iterator
 USE_OPENMP_ITER = 1
 # the additional link flags you want to add
-ADD_LDFLAGS = -ljpeg
+#ADD_LDFLAGS = -ljpeg
 
 # the additional compile flags you want to add
 ADD_CFLAGS =
