@@ -5,7 +5,8 @@
  * \brief processing unit to do data augmention
  * \author Tianqi Chen, Bing Xu, Naiyan Wang
  */
-#include <dmlc/logging.h>
+//#include <dmlc/logging.h>
+#include <logger/assertions.hpp>
 #include <mshadow/tensor.h>
 #include "data.h"
 #include "../utils/utils.h"
@@ -112,8 +113,7 @@ private:
     if (shape_[1] == 1) {
       img_ = data * scale_;
     } else {
-      CHECK(data.size(1) >= shape_[1] && data.size(2) >= shape_[2])
-          << "Data size must be bigger than the input size to net.";
+      ASSERT_MSG((data.size(1) >= shape_[1] && data.size(2) >= shape_[2]), "Data size must be bigger than the input size to net.");
       mshadow::index_t yy = data.size(1) - shape_[1];
       mshadow::index_t xx = data.size(2) - shape_[2];
       if (rand_crop_ != 0 && (yy != 0 || xx != 0)) {
@@ -180,7 +180,7 @@ private:
     unsigned long elapsed = 0;
     size_t imcnt = 1;
 
-    CHECK(this->Next_()) << "input iterator failed.";
+    ASSERT_MSG(this->Next_(),"input iterator failed.");
     meanimg_.Resize(mshadow::Shape3(shape_[0], shape_[1], shape_[2]));
     mshadow::Copy(meanimg_, img_);
     while (this->Next()) {
