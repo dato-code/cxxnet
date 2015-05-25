@@ -7,6 +7,7 @@
  */
 #include "./utils.h"
 #include <dmlc/io.h>
+#include <dmlc/logging.h>
 #include <string>
 #include <algorithm>
 #include <cstring>
