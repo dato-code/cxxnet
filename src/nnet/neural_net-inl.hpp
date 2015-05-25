@@ -16,6 +16,8 @@
 #include "../utils/io.h"
 #include "../utils/thread.h"
 #include "./nnet_config.h"
+#include "./cxxnet_trainer_interface.h"
+#include "./cxxnet_trainer/interface.h"
 
 namespace cxxnet {
 namespace nnet {

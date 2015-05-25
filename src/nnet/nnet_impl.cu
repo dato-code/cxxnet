@@ -6,7 +6,7 @@
 namespace cxxnet {
 namespace nnet {
 template<>
-INetTrainer* CreateNet<gpu>(int net_type) {
+GLINetTrainer* CreateNet<gpu>(int net_type) {
   return CreateNet_<gpu>(net_type);
 }
 }  // namespace nnet

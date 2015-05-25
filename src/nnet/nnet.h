@@ -55,6 +55,9 @@ class INetTrainer{
    */
   virtual void Predict(mshadow::TensorContainer<mshadow::cpu, 1> *out_preds,
                        const DataBatch &batch) = 0;
+
+  //TODO Actually implement
+  virtual void Predict(std::vector<float> out_preds, const DataBatch &batch) {}
   /*!
    * \brief extract the content of a node for a given data batch
    * \param out_preds the content for each data sample in the node
@@ -91,13 +94,6 @@ class INetTrainer{
                          const char *weight_tag) = 0;
 };
 
-/*!
- * \brief create a net implementation
- * \param net_type network type, used to select trainer variants
- * \tparam device type the net lies
- */
-template<typename xpu>
-INetTrainer* CreateNet(int net_type);
 }  // namespace nnet
 }  // namespace cxxnet
 #endif // CXXNET_NNET_NNET_H_

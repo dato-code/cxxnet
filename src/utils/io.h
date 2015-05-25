@@ -7,6 +7,11 @@
  */
 #include "./utils.h"
 #include <dmlc/io.h>
+<<<<<<< HEAD
+=======
+//#include <dmlc/logging.h>
+>>>>>>> eafe5a4... Removing dmlc logging dependencies from io.h"
+#include <logger/assertions.hpp>
 #include <string>
 #include <algorithm>
 #include <cstring>
@@ -25,7 +30,7 @@ struct MemoryBufferStream : public ISeekStream {
   }
   virtual ~MemoryBufferStream(void) {}
   virtual size_t Read(void *ptr, size_t size) {
-    CHECK(curr_ptr_ <= p_buffer_->length())
+    ASSERT_TRUE(curr_ptr_ <= p_buffer_->length())
           << " read can not have position excceed buffer length";
     size_t nread = std::min(p_buffer_->length() - curr_ptr_, size);
     if (nread != 0) memcpy(ptr, &(*p_buffer_)[0] + curr_ptr_, nread);
@@ -155,7 +160,11 @@ class BinaryPage {
    *  \param r r th obj in the page
    */
   inline Obj operator[](int r) {
-    CHECK(r < Size());
+<<<<<<< HEAD
+    ASSERT_TRUE(r < Size());
+=======
+    ASSERT(r < Size());
+>>>>>>> eafe5a4... Removing dmlc logging dependencies from io.h"
     return Obj(this->offset(data_[ r + 2 ]),  data_[ r + 2 ] - data_[ r + 1 ]);
   }
  private:

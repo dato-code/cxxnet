@@ -39,6 +39,8 @@ class IMetric{
                        const LabelRecord& labels) = 0;
   /*! \brief get current result */
   virtual double Get(void) const = 0;
+  /* \brief get current result*/
+  virtual std::vector<float> Get( const std::string& ) const { return std::vector<float>(); };
   /*! \return name of metric */
   virtual const char *Name(void) const= 0;
 };
@@ -185,6 +187,71 @@ struct MetricRecall : public MetricBase {
   int topn;
 };
 
+/*! \brief Full confusion matrix */
+struct MetricConfusionMatrix: public IMetric {
+public:
+    MetricConfusionMatrix( ): name("confusion_matrix") { }
+    virtual ~MetricConfusionMatrix( void ){}
+    virtual void Clear( void ){
+      map.clear();
+    }
+    virtual void AddEval( const mshadow::Tensor<cpu,2> &predscore, const LabelRecord& labels ) {
+        for( index_t i = 0; i < predscore.size(1); ++ i ){                    
+            CalcMetric( predscore[i], labels.label[i] );
+        }
+    }
+    virtual double Get( void ) const{
+        mshadow::utils::Assert(false, "Cannot Get a single value out of confusion matrix");
+        return 0.0;
+    }
+    virtual std::vector<float> Get( const std::string& key ) const {
+        std::vector<float> ret;
+        typedef std::map<std::pair<index_t,index_t>, float>::const_iterator iter;
+        if (key == "target_label") {
+          for (iter x = map.begin(); x != map.end(); ++x) ret.push_back(x->first.second);
+        } else if (key == "predicted_label") {
+          for (iter x = map.begin(); x != map.end(); ++x) ret.push_back(x->first.first);
+        } else  if (key == "count") {
+          for (iter x = map.begin(); x != map.end(); ++x) ret.push_back(x->second);
+        } else {
+          mshadow::utils::Assert(false, "Unexpected key for getting confusion matrix");
+        }
+        return ret;
+    }
+    virtual const char *Name( void ) const{
+        return name.c_str();
+    }
+protected:
+    virtual float CalcMetric( const mshadow::Tensor<cpu,1> &pred, const mshadow::Tensor<cpu,1> &label ) {
+        index_t klabel = (index_t)label[0];
+        index_t maxidx = 0;
+        for( index_t i = 1; i < pred.size(0); ++ i ){
+            if( pred[i] > pred[maxidx] ) maxidx = i;
+        }
+        std::pair<index_t, index_t> key_pair = std::make_pair(maxidx, klabel);
+        if (map.count(key_pair)) {
+          ++map[key_pair];
+        } else {
+          map[key_pair] = 1;
+        }
+        return 0.0;
+    }
+private:
+    std::string name;
+    std::map<std::pair<index_t, index_t>, float> map;
+};
+
+
+
+/*! \brief Storing confusion matrix as three columns */
+struct ConfusionMatrix{
+  std::vector<float> predicted_label;
+  std::vector<float> target_label;
+  std::vector<float> count;
+};
+
+
+
 /*! \brief a set of evaluators */
 struct MetricSet{
  public:
@@ -198,6 +265,7 @@ struct MetricSet{
     if (!strcmp(name, "error")) return new MetricError();
     if (!strcmp(name, "logloss")) return new MetricLogloss();
     if (!strncmp(name, "rec@",4)) return new MetricRecall(name);
+    if (!strcmp(name, "confusion_matrix" )) return new MetricConfusionMatrix();
     return NULL;
   }
   void AddMetric(const char *name, const char* field) {
@@ -237,6 +305,32 @@ struct MetricSet{
     }
     return ss.str();
   }
+  inline std::map<std::string, float> Get() {
+        std::map<std::string, float> ret;
+        for (size_t i = 0; i < evals_.size(); ++i) {
+          if ( strcmp(evals_[i]->Name(), "confusion_matrix") )
+            ret[evals_[i]->Name()] = evals_[i]->Get();
+        }
+        return ret;
+    }
+   inline ConfusionMatrix GetConfusionMatrix() {
+        IMetric* metric_ptr = NULL;
+        ConfusionMatrix ret;
+        for (size_t i = 0; i < evals_.size(); ++i) {
+          if ( !strcmp(evals_[i]->Name(), "confusion_matrix") ) {
+            metric_ptr = evals_[i];
+          }
+        }
+        if (metric_ptr != NULL) {
+          ret.predicted_label = metric_ptr->Get("predicted_label");
+          ret.target_label = metric_ptr->Get("target_label");
+          ret.count = metric_ptr->Get("count");
+        }
+        return ret;
+    }
+
+
+
  private:
   inline static bool CmpName(const IMetric *a, const IMetric *b) {
     return strcmp(a->Name(), b->Name()) < 0;

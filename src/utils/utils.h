@@ -11,12 +11,12 @@
 #include <cstdlib>
 #include <cstdarg>
 #include <dmlc/base.h>
-#include <dmlc/logging.h>
+//#include <dmlc/logging.h>
 #if MSHADOW_RABIT_PS
 #include <rabit.h>
 #endif
 
-#define CUDA_CHECK(ARGS) CHECK(ARGS==0);
+//#define CUDA_CHECK(ARGS) CHECK(ARGS==0);
 
 namespace cxxnet {
 /*! \brief include dmlc objects in cxxnet interface */

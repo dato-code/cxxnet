@@ -3,7 +3,7 @@
 #include <string>
 #include <cstring>
 #include <cstdlib>
-#include "./nnet.h"
+#include "./cxxnet_trainer_interface.h"
 #include "../utils/io.h"
 #include "../utils/metric.h"
 #include "./neural_net-inl.hpp"
@@ -19,7 +19,7 @@ namespace cxxnet {
 namespace nnet {
 /*! \brief implementation of neural network trainer, using multiple threads */
 template<typename xpu>
-class CXXNetThreadTrainer : public INetTrainer {
+class CXXNetThreadTrainer : public GLINetTrainer {
  public:
   CXXNetThreadTrainer(void) {
     batch_size = 100;
@@ -238,6 +238,69 @@ class CXXNetThreadTrainer : public INetTrainer {
     this->ForwardTo(req, batch);
     *out_preds = req[0].second;
   }
+  virtual std::string PrintTrainEvaluate(){
+    return train_metric.Print("train");
+  }
+  virtual std::map<std::string, float> GetTrainEvaluate() {
+    return train_metric.Get();
+  }
+  virtual void ClearTrainEvaluate() {
+    train_metric.Clear();
+  }
+  /*! \brief  evaluate one test statistics, output name and result */      
+  std::map<std::string, std::vector<float> > EvalMetrics( IIterator<DataBatch> *iter_eval, const std::vector<std::string>& metric_names) {
+
+      utils::MetricSet metrics;
+      for (size_t i = 0 ; i < metric_names.size(); ++i) {
+        metrics.AddMetric(metric_names[i].c_str(),"label");
+      }
+      
+      // explicitly sync parameters
+      for (size_t i = 0; i < nets_.size(); ++i) {
+        nets_[i]->SyncParam();
+      }
+      this->WaitAllJobs();
+      // safe guard for safely use allreduce in eval
+      if (pserver != NULL) {
+        pserver->SetParam("msg:disable_allreduce", "1");
+      }    
+      metric.Clear();
+      iter_eval->BeforeFirst();
+      while (iter_eval->Next()) {
+        const DataBatch& batch = iter_eval->Value();
+        this->ForwardTo(eval_req, batch);
+        std::vector<mshadow::Tensor<cpu, 2> > scores;
+        for (index_t i = 0; i < eval_req.size(); ++i) {
+          scores.push_back(eval_req[i].second.Slice(
+              0, eval_req[i].second.size(0) - batch.num_batch_padd).FlatTo2D());
+        }
+        metric.AddEval(scores, GetLabelInfo(batch));
+      }
+      // rabit related code for safe guard
+      if (pserver != NULL) {
+        pserver->SetParam("msg:disable_allreduce", "0");
+      }
+
+      // Prepare the return object
+      std::map<std::string, std::vector<float> > ret;
+
+      // Add simple float metrics
+      std::map<std::string, float> simple_metrics = metrics.Get();
+      typedef std::map<std::string, float>::const_iterator iter;
+      for (iter x = simple_metrics.begin(); x != simple_metrics.end(); ++x) {
+        ret[x->first].push_back(x->second);
+      }
+
+      // Add confusion matrix metrics
+      utils::ConfusionMatrix confusion_matrix = metrics.GetConfusionMatrix();
+      if (confusion_matrix.count.size() > 0) {
+        ret["cm_count"] = confusion_matrix.count;
+        ret["cm_target"] = confusion_matrix.target_label;
+        ret["cm_predicted"] = confusion_matrix.predicted_label;
+      }
+      return ret;
+  }
+
   virtual std::string Evaluate(IIterator<DataBatch> *iter_eval, const char *data_name) {
     // explicitly sync parameters
     for (size_t i = 0; i < nets_.size(); ++i) {
@@ -488,7 +551,7 @@ class CXXNetThreadTrainer : public INetTrainer {
 };
 
 template<typename xpu>
-INetTrainer *CreateNet_(int net_type) {
+GLINetTrainer *CreateNet_(int net_type) {
   return new CXXNetThreadTrainer<xpu>();
 }
 }  // namespace nnet
