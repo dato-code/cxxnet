@@ -3,13 +3,10 @@
 #include <string>
 #include <vector>
 #include <map>
-namespace mshadow{
+namespace cxxnet{
 namespace utils{
 class IStream;
 }
-}
-
-namespace cxxnet{
 
 class DataBatch;
 template <typename T>
@@ -25,9 +22,9 @@ class IIterator;
         /*! \brief random initalize model */
         virtual void InitModel( void ) = 0;
         /*! \brief save model to stream */
-        virtual void SaveModel( mshadow_old::utils::IStream &fo ) const = 0;
+        virtual void SaveModel( ::utils::IStream &fo ) const = 0;
         /*! \brief load model from stream */
-        virtual void LoadModel( mshadow_old::utils::IStream &fi ) = 0;
+        virtual void LoadModel( ::utils::IStream &fi ) = 0;
         /*!
          * \brief inform the updater that a new round has been started
          * \param round round counter
