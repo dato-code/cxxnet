@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include "../utils/io.h"
-
+namespace cxxnet{
 
 class DataBatch;
 template <typename T>
