@@ -3,8 +3,14 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "../utils/io.h"
+//#include "../utils/io.h"
+
+
 namespace cxxnet{
+
+namespace dmlc{
+class Stream;
+}
 
 class DataBatch;
 template <typename T>
@@ -20,9 +26,9 @@ class IIterator;
         /*! \brief random initalize model */
         virtual void InitModel( void ) = 0;
         /*! \brief save model to stream */
-        virtual void SaveModel( utils::IStream &fo ) const = 0;
+        virtual void SaveModel( dmlc::Stream &fo ) const = 0;
         /*! \brief load model from stream */
-        virtual void LoadModel( utils::IStream &fi ) = 0;
+        virtual void LoadModel( dmlc::Stream &fi ) = 0;
         /*!
          * \brief inform the updater that a new round has been started
          * \param round round counter
