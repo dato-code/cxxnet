@@ -3,10 +3,8 @@
 #include <string>
 #include <vector>
 #include <map>
-namespace cxxnet{
-namespace utils{
-class IStream;
-}
+#include "../utils/io.h"
+
 
 class DataBatch;
 template <typename T>
