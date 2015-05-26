@@ -4,9 +4,9 @@
 #include <vector>
 #include <map>
 namespace cxxnet{
-//namespace utils{
-//class IStream;
-//}
+namespace utils{
+class IStream;
+}
 
 class DataBatch;
 template <typename T>
