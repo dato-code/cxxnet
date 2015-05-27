@@ -247,6 +247,40 @@ class CXXNetThreadTrainer : public GLINetTrainer {
   virtual void ClearTrainEvaluate() {
     train_metric.Clear()
   }
+  /*! \brief  evaluate one test statistics, output name and result */      
+  std::map<std::string, std::vector<float> > EvalMetrics( IIterator<DataBatch> *iter_eval, const std::vector<std::string>& metric_names) {
+
+      utils::MetricSet metrics;
+      for (size_t i = 0 ; i < metric_names.size(); ++i) {
+        metrics.AddMetric(metric_names[i].c_str());
+      }
+      iter_eval->BeforeFirst();
+      while( iter_eval->Next() ){
+          const DataBatch& batch = iter_eval->Value();
+          this->PreparePredTemp( batch );
+          metrics.AddEval( temp, batch.labels );
+      }
+
+      // Prepare the return object
+      std::map<std::string, std::vector<float> > ret;
+
+      // Add simple float metrics
+      std::map<std::string, float> simple_metrics = metrics.Get();
+      typedef std::map<std::string, float>::const_iterator iter;
+      for (iter x = simple_metrics.begin(); x != simple_metrics.end(); ++x) {
+        ret[x->first].push_back(x->second);
+      }
+
+      // Add confusion matrix metrics
+      utils::ConfusionMatrix confusion_matrix = metrics.GetConfusionMatrix();
+      if (confusion_matrix.count.size() > 0) {
+        ret["cm_count"] = confusion_matrix.count;
+        ret["cm_target"] = confusion_matrix.target_label;
+        ret["cm_predicted"] = confusion_matrix.predicted_label;
+      }
+      return ret;
+  }
+
   virtual std::string Evaluate(IIterator<DataBatch> *iter_eval, const char *data_name) {
     // explicitly sync parameters
     for (size_t i = 0; i < nets_.size(); ++i) {
