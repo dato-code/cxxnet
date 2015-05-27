@@ -254,11 +254,36 @@ class CXXNetThreadTrainer : public GLINetTrainer {
       for (size_t i = 0 ; i < metric_names.size(); ++i) {
         metrics.AddMetric(metric_names[i].c_str(),"label");
       }
+      
+      // explicitly sync parameters
+      for (size_t i = 0; i < nets_.size(); ++i) {
+        nets_[i]->SyncParam();
+      }
+      this->WaitAllJobs();
+      // safe guard for safely use allreduce in eval
+      if (pserver != NULL) {
+        pserver->SetParam("msg:disable_allreduce", "1");
+      }    
+      std::string ret;
+      if (eval_train != 0) {
+        ret += train_metric.Print("train");
+        train_metric.Clear();
+      }
+      metric.Clear();
       iter_eval->BeforeFirst();
-      while( iter_eval->Next() ){
-          const DataBatch& batch = iter_eval->Value();
-          this->PreparePredTemp( batch );
-          metrics.AddEval( temp, batch.labels );
+      while (iter_eval->Next()) {
+        const DataBatch& batch = iter_eval->Value();
+        this->ForwardTo(eval_req, batch);
+        std::vector<mshadow::Tensor<cpu, 2> > scores;
+        for (index_t i = 0; i < eval_req.size(); ++i) {
+          scores.push_back(eval_req[i].second.Slice(
+              0, eval_req[i].second.size(0) - batch.num_batch_padd).FlatTo2D());
+        }
+        metric.AddEval(scores, GetLabelInfo(batch));
+      }
+      // rabit related code for safe guard
+      if (pserver != NULL) {
+        pserver->SetParam("msg:disable_allreduce", "0");
       }
 
       // Prepare the return object
