@@ -194,7 +194,7 @@ struct MetricRecall : public MetricBase {
               map.clear();
             }
             virtual void AddEval( const mshadow::Tensor<cpu,2> &predscore, const float* labels ) {
-                for( index_t i = 0; i < predscore.shape[1]; ++ i ){                    
+                for( index_t i = 0; i < predscore.size(1); ++ i ){                    
                     CalcMetric( predscore[i], labels[i] );
                 }
             }
@@ -223,7 +223,7 @@ struct MetricRecall : public MetricBase {
             virtual float CalcMetric( const mshadow::Tensor<cpu,1> &pred, float label ) {
                 index_t klabel = (index_t)label;
                 index_t maxidx = 0;
-                for( index_t i = 1; i < pred.shape[0]; ++ i ){
+                for( index_t i = 1; i < pred.size(0); ++ i ){
                     if( pred[i] > pred[maxidx] ) maxidx = i;
                 }
                 std::pair<index_t, index_t> key_pair = std::make_pair(maxidx, klabel);
