@@ -1,9 +1,9 @@
 #ifndef CXXNET_TRAINER_INTERFACE_HPP
 #define CXXNET_TRAINER_INTERFACE_HPP
-#include <string>
-#include <vector>
-#include <map>
-//#include "../utils/io.h"
+//#include <string>
+//#include <vector>
+//#include <map>
+#include "./nnet.h"
 
 namespace dmlc{
 class Stream;
@@ -21,28 +21,8 @@ class IIterator;
 
 
 /*! \brief interface for network */
-    class INetTrainer{
+    class GLINetTrainer : public nnet::INetTrainer{
     public:
-        virtual ~INetTrainer( void ){}
-        /*! \brief set model parameters, call this before everything, including load model */
-        virtual void SetParam( const char *name, const char *val ) = 0;
-        /*! \brief random initalize model */
-        virtual void InitModel( void ) = 0;
-        /*! \brief save model to stream */
-        virtual void SaveModel( utils::IStream &fo ) const = 0;
-        /*! \brief load model from stream */
-        virtual void LoadModel( utils::IStream &fi ) = 0;
-        /*!
-         * \brief inform the updater that a new round has been started
-         * \param round round counter
-         */
-        virtual void StartRound( int round ) = 0;
-        /*!
-         * \brief update model parameter
-         * \param training data batch
-         */
-        virtual void Update( const DataBatch& data ) = 0;
-
         /*! \brief print the cumulative training evaluation */
         virtual std::string PrintTrainEvaluate() = 0;
         /*! \brief print the cumulative training evaluation */

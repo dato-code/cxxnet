@@ -238,6 +238,9 @@ class CXXNetThreadTrainer : public INetTrainer {
     this->ForwardTo(req, batch);
     *out_preds = req[0].second;
   }
+  virtual std::string PrintTrainEvaluate(){
+    return train_metric.Print("train");
+  }
   virtual std::string Evaluate(IIterator<DataBatch> *iter_eval, const char *data_name) {
     // explicitly sync parameters
     for (size_t i = 0; i < nets_.size(); ++i) {
