@@ -42,5 +42,16 @@ class IIterator;
         virtual void PredictTopK( std::vector< std::pair<float,uint32_t > > &preds, const DataBatch& batch, uint32_t topk ) = 0;
         virtual size_t GetOutputSize ( void ) = 0; 
     };
-};
+
+
+namspace nnet{
+/*!
+ * \brief create a net implementation
+ * \param net_type network type, used to select trainer variants
+ * \tparam device type the net lies
+ */
+template<typename xpu>
+GLINetTrainer* CreateNet(int net_type);
+}  // namespace nnet
+}// namespace cxxnet
 #endif
