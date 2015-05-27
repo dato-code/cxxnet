@@ -44,7 +44,7 @@ class IIterator;
     };
 
 
-namspace nnet{
+namespace nnet{
 /*!
  * \brief create a net implementation
  * \param net_type network type, used to select trainer variants

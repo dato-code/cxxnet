@@ -94,13 +94,6 @@ class INetTrainer{
                          const char *weight_tag) = 0;
 };
 
-/*!
- * \brief create a net implementation
- * \param net_type network type, used to select trainer variants
- * \tparam device type the net lies
- */
-template<typename xpu>
-INetTrainer* CreateNet(int net_type);
 }  // namespace nnet
 }  // namespace cxxnet
 #endif // CXXNET_NNET_NNET_H_
