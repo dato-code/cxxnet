@@ -185,6 +185,61 @@ struct MetricRecall : public MetricBase {
   int topn;
 };
 
+ /*! \brief Full confusion matrix */
+        struct MetricConfusionMatrix: public IMetric {
+        public:
+            MetricConfusionMatrix( ): name("confusion_matrix") { }
+            virtual ~MetricConfusionMatrix( void ){}
+            virtual void Clear( void ){
+              map.clear();
+            }
+            virtual void AddEval( const mshadow_old::Tensor<cpu,2> &predscore, const float* labels ) {
+                for( index_t i = 0; i < predscore.shape[1]; ++ i ){                    
+                    CalcMetric( predscore[i], labels[i] );
+                }
+            }
+            virtual double Get( void ) const{
+                Assert(false, "Cannot Get a single value out of confusion matrix");
+                return 0.0;
+            }
+            virtual std::vector<float> Get( const std::string& key ) const {
+                std::vector<float> ret;
+                typedef std::map<std::pair<index_t,index_t>, float>::const_iterator iter;
+                if (key == "target_label") {
+                  for (iter x = map.begin(); x != map.end(); ++x) ret.push_back(x->first.second);
+                } else if (key == "predicted_label") {
+                  for (iter x = map.begin(); x != map.end(); ++x) ret.push_back(x->first.first);
+                } else  if (key == "count") {
+                  for (iter x = map.begin(); x != map.end(); ++x) ret.push_back(x->second);
+                } else {
+                  Assert(false, "Unexpected key for getting confusion matrix");
+                }
+                return ret;
+            }
+            virtual const char *Name( void ) const{
+                return name.c_str();
+            }
+        protected:
+            virtual float CalcMetric( const mshadow_old::Tensor<cpu,1> &pred, float label ) {
+                index_t klabel = (index_t)label;
+                index_t maxidx = 0;
+                for( index_t i = 1; i < pred.shape[0]; ++ i ){
+                    if( pred[i] > pred[maxidx] ) maxidx = i;
+                }
+                std::pair<index_t, index_t> key_pair = std::make_pair(maxidx, klabel);
+                if (map.count(key_pair)) {
+                  ++map[key_pair];
+                } else {
+                  map[key_pair] = 1;
+                }
+                return 0.0;
+            }
+        private:
+            std::string name;
+            std::map<std::pair<index_t, index_t>, float> map;
+        };
+
+
 /*! \brief a set of evaluators */
 struct MetricSet{
  public:
@@ -198,6 +253,7 @@ struct MetricSet{
     if (!strcmp(name, "error")) return new MetricError();
     if (!strcmp(name, "logloss")) return new MetricLogloss();
     if (!strncmp(name, "rec@",4)) return new MetricRecall(name);
+    if (!strncmp(name, "confusion_matrix" )) return new MetricConfusionMatrix();
     return NULL;
   }
   void AddMetric(const char *name, const char* field) {
