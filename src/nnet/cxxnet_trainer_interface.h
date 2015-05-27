@@ -2,7 +2,7 @@
 #define CXXNET_TRAINER_INTERFACE_HPP
 //#include <string>
 //#include <vector>
-//#include <map>
+#include <map>
 #include "./nnet.h"
 
 namespace dmlc{
