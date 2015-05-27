@@ -55,6 +55,8 @@ class INetTrainer{
    */
   virtual void Predict(mshadow::TensorContainer<mshadow::cpu, 1> *out_preds,
                        const DataBatch &batch) = 0;
+
+  virtual void Predict(std::vector<float> out_preds, const DataBatch &batch) = 0;
   /*!
    * \brief extract the content of a node for a given data batch
    * \param out_preds the content for each data sample in the node
