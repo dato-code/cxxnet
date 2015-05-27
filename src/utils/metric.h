@@ -237,6 +237,15 @@ struct MetricSet{
     }
     return ss.str();
   }
+  inline std::map<std::string, float> Get() {
+                std::map<std::string, float> ret;
+                for (size_t i = 0; i < evals_.size(); ++i) {
+                  if ( strcmp(evals_[i]->Name(), "confusion_matrix") )
+                    ret[evals_[i]->Name()] = evals_[i]->Get();
+                }
+                return ret;
+            }
+
  private:
   inline static bool CmpName(const IMetric *a, const IMetric *b) {
     return strcmp(a->Name(), b->Name()) < 0;
