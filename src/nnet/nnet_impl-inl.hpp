@@ -245,7 +245,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
     return train_metric.Get();
   }
   virtual void ClearTrainEvaluate() {
-    train_metric.Clear()
+    train_metric.Clear();
   }
   /*! \brief  evaluate one test statistics, output name and result */      
   std::map<std::string, std::vector<float> > EvalMetrics( IIterator<DataBatch> *iter_eval, const std::vector<std::string>& metric_names) {
