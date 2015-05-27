@@ -253,7 +253,7 @@ struct MetricSet{
     if (!strcmp(name, "error")) return new MetricError();
     if (!strcmp(name, "logloss")) return new MetricLogloss();
     if (!strncmp(name, "rec@",4)) return new MetricRecall(name);
-    if (!strncmp(name, "confusion_matrix" )) return new MetricConfusionMatrix();
+    if (!strcmp(name, "confusion_matrix" )) return new MetricConfusionMatrix();
     return NULL;
   }
   void AddMetric(const char *name, const char* field) {
