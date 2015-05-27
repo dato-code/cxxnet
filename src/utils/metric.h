@@ -39,6 +39,8 @@ class IMetric{
                        const LabelRecord& labels) = 0;
   /*! \brief get current result */
   virtual double Get(void) const = 0;
+  /* \brief get current result*/
+  virtual std::vector<float> Get( const std::string& ) const { return std::vector<float>(); };
   /*! \return name of metric */
   virtual const char *Name(void) const= 0;
 };
@@ -312,7 +314,7 @@ struct MetricSet{
         return ret;
     }
    inline ConfusionMatrix GetConfusionMatrix() {
-        MetricConfusionMatrix* metric_ptr = NULL;
+        IMetric* metric_ptr = NULL;
         ConfusionMatrix ret;
         for (size_t i = 0; i < evals_.size(); ++i) {
           if ( !strcmp(evals_[i]->Name(), "confusion_matrix") ) {
