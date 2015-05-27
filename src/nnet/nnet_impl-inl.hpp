@@ -252,7 +252,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
 
       utils::MetricSet metrics;
       for (size_t i = 0 ; i < metric_names.size(); ++i) {
-        metrics.AddMetric(metric_names[i].c_str());
+        metrics.AddMetric(metric_names[i].c_str(),"label");
       }
       iter_eval->BeforeFirst();
       while( iter_eval->Next() ){
