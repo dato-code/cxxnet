@@ -3,7 +3,7 @@
 #include <string>
 #include <cstring>
 #include <cstdlib>
-#include "./nnet.h"
+#include "./cxxnet_trainer_interface.h"
 #include "../utils/io.h"
 #include "../utils/metric.h"
 #include "./neural_net-inl.hpp"
@@ -491,7 +491,7 @@ class CXXNetThreadTrainer : public INetTrainer {
 };
 
 template<typename xpu>
-INetTrainer *CreateNet_(int net_type) {
+GLINetTrainer *CreateNet_(int net_type) {
   return new CXXNetThreadTrainer<xpu>();
 }
 }  // namespace nnet
