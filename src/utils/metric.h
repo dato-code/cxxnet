@@ -199,7 +199,7 @@ struct MetricRecall : public MetricBase {
                 }
             }
             virtual double Get( void ) const{
-                Assert(false, "Cannot Get a single value out of confusion matrix");
+                mshadow::utils::Assert(false, "Cannot Get a single value out of confusion matrix");
                 return 0.0;
             }
             virtual std::vector<float> Get( const std::string& key ) const {
@@ -212,7 +212,7 @@ struct MetricRecall : public MetricBase {
                 } else  if (key == "count") {
                   for (iter x = map.begin(); x != map.end(); ++x) ret.push_back(x->second);
                 } else {
-                  Assert(false, "Unexpected key for getting confusion matrix");
+                  mshadow::utils::Assert(false, "Unexpected key for getting confusion matrix");
                 }
                 return ret;
             }
