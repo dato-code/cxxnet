@@ -220,8 +220,8 @@ struct MetricRecall : public MetricBase {
                 return name.c_str();
             }
         protected:
-            virtual float CalcMetric( const mshadow::Tensor<cpu,1> &pred, float label ) {
-                index_t klabel = (index_t)label;
+            virtual float CalcMetric( const mshadow::Tensor<cpu,1> &pred, const mshadow::Tensor<cpu,1> &label ) {
+                index_t klabel = (index_t)label[0];
                 index_t maxidx = 0;
                 for( index_t i = 1; i < pred.size(0); ++ i ){
                     if( pred[i] > pred[maxidx] ) maxidx = i;
