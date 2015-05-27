@@ -312,7 +312,7 @@ struct MetricSet{
         return ret;
     }
    inline ConfusionMatrix GetConfusionMatrix() {
-        IMetric* metric_ptr = NULL;
+        MetricConfusionMatrix* metric_ptr = NULL;
         ConfusionMatrix ret;
         for (size_t i = 0; i < evals_.size(); ++i) {
           if ( !strcmp(evals_[i]->Name(), "confusion_matrix") ) {
