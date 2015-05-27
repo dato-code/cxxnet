@@ -264,11 +264,6 @@ class CXXNetThreadTrainer : public GLINetTrainer {
       if (pserver != NULL) {
         pserver->SetParam("msg:disable_allreduce", "1");
       }    
-      std::string ret;
-      if (eval_train != 0) {
-        ret += train_metric.Print("train");
-        train_metric.Clear();
-      }
       metric.Clear();
       iter_eval->BeforeFirst();
       while (iter_eval->Next()) {
