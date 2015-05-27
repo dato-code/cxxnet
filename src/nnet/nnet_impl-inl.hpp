@@ -241,6 +241,12 @@ class CXXNetThreadTrainer : public GLINetTrainer {
   virtual std::string PrintTrainEvaluate(){
     return train_metric.Print("train");
   }
+  virtual std::map<std::string, float> GetTrainEvaluate() {
+    return train_metric.Get();
+  }
+  virtual void ClearTrainEvaluate() {
+    train_metric.Clear()
+  }
   virtual std::string Evaluate(IIterator<DataBatch> *iter_eval, const char *data_name) {
     // explicitly sync parameters
     for (size_t i = 0; i < nets_.size(); ++i) {
