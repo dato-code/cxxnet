@@ -19,7 +19,7 @@ namespace cxxnet {
 namespace nnet {
 /*! \brief implementation of neural network trainer, using multiple threads */
 template<typename xpu>
-class CXXNetThreadTrainer : public INetTrainer {
+class CXXNetThreadTrainer : public GLINetTrainer {
  public:
   CXXNetThreadTrainer(void) {
     batch_size = 100;
