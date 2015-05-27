@@ -193,9 +193,9 @@ struct MetricRecall : public MetricBase {
             virtual void Clear( void ){
               map.clear();
             }
-            virtual void AddEval( const mshadow::Tensor<cpu,2> &predscore, const float* labels ) {
+            virtual void AddEval( const mshadow::Tensor<cpu,2> &predscore, const LabelRecord& labels ) {
                 for( index_t i = 0; i < predscore.size(1); ++ i ){                    
-                    CalcMetric( predscore[i], labels[i] );
+                    CalcMetric( predscore[i], labels.label[i] );
                 }
             }
             virtual double Get( void ) const{
