@@ -33,8 +33,6 @@ class IIterator;
         virtual std::string Evaluate( IIterator<DataBatch> *iter_eval, const char* evname ) = 0;
         /*! \brief  evaluate test statistics, output name and result */      
         virtual std::map<std::string, std::vector<float> > EvalMetrics( IIterator<DataBatch> *iter_eval, const std::vector<std::string>& metrics ) = 0;
-        /*! \brief  predict topk score and index */
-        virtual void PredictTopK( std::vector< std::pair<float,uint32_t > > &preds, const DataBatch& batch, uint32_t topk ) = 0;
     };
 
 
