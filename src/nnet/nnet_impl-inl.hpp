@@ -221,11 +221,11 @@ class CXXNetThreadTrainer : public GLINetTrainer {
     req[0].second.Resize(s);
     this->ForwardTo(req, data);
 
-    utils::Assert( topk <= temp.shape[0], "topk must be smaller than number of classes");
-    std::vector< std::pair<float,index_t> > vec( temp.shape[0] );
-    for( index_t i = 0; i <temp.shape[1]; ++i ){
-        for( index_t j = 0; j < temp.shape[0]; ++ j ){
-            vec[j] = std::make_pair( temp[i][j], j );
+    mshadow::utils::Assert( topk <= temp.size(3), "topk must be smaller than number of classes");
+    std::vector< std::pair<float,index_t> > vec( temp.size(3) );
+    for( index_t i = 0; i <batch_size; ++i ){
+        for( index_t j = 0; j < temp.size(3); ++ j ){
+            vec[j] = std::make_pair( req[0].second[i][0][[0][j], j );
         }
         utils::Shuffle( vec );
         std::sort( vec.begin(), vec.end(), CmpScore );
@@ -374,6 +374,11 @@ class CXXNetThreadTrainer : public GLINetTrainer {
   }
 
  private:
+    
+  inline static bool CmpScore( const std::pair<float,index_t> &a, const std::pair<float,index_t> &b ){
+    return a.first > b.first;
+  }
+
   inline layer::LabelInfo GetLabelInfo(const DataBatch &data) const {
     layer::LabelInfo info;
     layer::LabelRecord rec;
