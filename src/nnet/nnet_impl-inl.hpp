@@ -221,10 +221,10 @@ class CXXNetThreadTrainer : public GLINetTrainer {
     req[0].second.Resize(s);
     this->ForwardTo(req, data);
 
-    mshadow::utils::Assert( topk <= temp.size(3), "topk must be smaller than number of classes");
-    std::vector< std::pair<float,index_t> > vec( temp.size(3) );
+    mshadow::utils::Assert( topk <= req[0].second.size(3), "topk must be smaller than number of classes");
+    std::vector< std::pair<float,index_t> > vec( req[0].second.size(3) );
     for( index_t i = 0; i <batch_size; ++i ){
-        for( index_t j = 0; j < temp.size(3); ++ j ){
+        for( index_t j = 0; j < req[0].second.size(3); ++ j ){
             vec[j] = std::make_pair( req[0].second[i][0][[0][j], j );
         }
         utils::Shuffle( vec );
