@@ -227,7 +227,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
         for( index_t j = 0; j < req[0].second.size(3); ++ j ){
             vec[j] = std::make_pair( this->req[0].second[i][0][0][j], j );
         }
-        utils::Shuffle( vec, req[0].second.size(3) );
+        utils::RandomSampler::Shuffle( vec, req[0].second.size(3) );
         std::sort( vec.begin(), vec.end(), CmpScore );
         for( int i = 0; i < topk; ++ i ){
             preds.push_back( vec[i] );
