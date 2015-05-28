@@ -33,14 +33,8 @@ class IIterator;
         virtual std::string Evaluate( IIterator<DataBatch> *iter_eval, const char* evname ) = 0;
         /*! \brief  evaluate test statistics, output name and result */      
         virtual std::map<std::string, std::vector<float> > EvalMetrics( IIterator<DataBatch> *iter_eval, const std::vector<std::string>& metrics ) = 0;
-
-        virtual void FeatureExtract(std::vector<std::vector <double> > &feats, const DataBatch& batch, size_t layer_id) = 0;
-
-        /*! \brief  predict labels */
-        virtual void Predict( std::vector<float> &preds, const DataBatch& batch ) = 0;
         /*! \brief  predict topk score and index */
         virtual void PredictTopK( std::vector< std::pair<float,uint32_t > > &preds, const DataBatch& batch, uint32_t topk ) = 0;
-        virtual size_t GetOutputSize ( void ) = 0; 
     };
 
 
