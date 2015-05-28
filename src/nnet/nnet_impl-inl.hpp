@@ -225,7 +225,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
     std::vector< std::pair<float,index_t> > vec( req[0].second.size(3) );
     for( index_t i = 0; i <batch_size; ++i ){
         for( index_t j = 0; j < req[0].second.size(3); ++ j ){
-            vec[j] = std::make_pair( this->req[0].second[i][0][0][j], j );
+            vec[j] = std::make_pair( req[0].second[i][0][0][j], j );
         }
         std::sort( vec.begin(), vec.end(), CmpScore );
         for( int i = 0; i < topk; ++ i ){
@@ -246,7 +246,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
     s[0] = batch_size;
     req[0].second.Resize(s);
     this->ForwardTo(req, batch);
-    for (index_t i; i < batch_size; ++i){
+    for (index_t i = 0; i < batch_size; ++i){
       feats.push_back( this->TransformFeat(req[0].second[i][0][0]));
     }
   }
