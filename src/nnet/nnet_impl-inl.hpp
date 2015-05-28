@@ -396,7 +396,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
       return pred[0];
     }
   }
-  inline std::vector<double> TransformFeat( mshadow_old::Tensor<cpu,1> feat ){
+  inline std::vector<double> TransformFeat( mshadow::Tensor<cpu,1> feat ){
     std::vector<double> ret;
     for (index_t i = 0; i < feat.shape[0]; ++i ){
         ret.push_back(feat[i]);
