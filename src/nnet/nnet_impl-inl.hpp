@@ -209,7 +209,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
     req[0].second.Resize(s);
     this->ForwardTo(req, data);
     for (index_t i = 0; i < batch_size; ++i) {
-      preds.push_back(this->TransformPred(req[0].second[i][0][0]));
+      out_preds.push_back(this->TransformPred(req[0].second[i][0][0]));
     }
   }
   
