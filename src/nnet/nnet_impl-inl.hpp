@@ -200,7 +200,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
       epoch_counter += 1;
     }
   }
-  virtual void Predict(std::vector<float> &preds,
+  virtual void Predict(std::vector<float> &out_preds,
                        const DataBatch &data) {
     std::vector<std::pair<int, mshadow::TensorContainer<cpu, 4> > > req;
     req.push_back(std::make_pair(nets_[0]->net().nodes.size() - 1, out_temp));
@@ -246,7 +246,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
     s[0] = batch_size;
     req[0].second.Resize(s);
     this->ForwardTo(req, batch);
-    for (index_t i; < batch_size; ++i){
+    for (index_t i; i < batch_size; ++i){
       feats.push_back( this->TransformFeat(req[0].second[i][0][0]));
     }
   }
