@@ -62,7 +62,7 @@ class INetTrainer{
    */
   virtual void FeatureExtract(std::vector<std::vector< double> > & feats,
                               const DataBatch &batch,
-                              size_t layer_id *node_name) = 0;
+                              size_t layer_id ) = 0;
   /*!
    * \brief Initialize current model from a input stream.
    *  This method will copy the weight from corresponding layers if their names match.
