@@ -200,43 +200,55 @@ class CXXNetThreadTrainer : public GLINetTrainer {
       epoch_counter += 1;
     }
   }
-  virtual void Predict(mshadow::TensorContainer<mshadow::cpu, 1> *out_preds,
+  virtual void Predict(std::vector<float> &preds,
                        const DataBatch &data) {
-    mshadow::TensorContainer<mshadow::cpu, 1> &preds = *out_preds;
     std::vector<std::pair<int, mshadow::TensorContainer<cpu, 4> > > req;
     req.push_back(std::make_pair(nets_[0]->net().nodes.size() - 1, out_temp));
     mshadow::Shape<4> s = nets_[0]->net().nodes.back().data.shape_;
     s[0] = batch_size;
     req[0].second.Resize(s);
     this->ForwardTo(req, data);
-    preds.Resize(mshadow::Shape1(batch_size));
     for (index_t i = 0; i < batch_size; ++i) {
-      preds[i] = this->TransformPred(req[0].second[i][0][0]);
+      preds.push_back(this->TransformPred(req[0].second[i][0][0]));
     }
   }
-  virtual void ExtractFeature(mshadow::TensorContainer<mshadow::cpu, 4> *out_preds,
-                              const DataBatch &batch,
-                              const char *node_name_) {
-    std::string node_name = node_name_;
-    std::map<std::string, int> &name_map = net_cfg.node_name_map;
-    int node_id, offset;
-    if (sscanf(node_name.c_str(), "top[-%d]", &offset) == 1) {
-      int nnode = static_cast<int>(nets_[0]->net().nodes.size());
-      utils::Check(offset >= 1 && offset <= nnode,
-                   "ExtractFeature: offset must be within num_node range");
-      node_id = nnode - offset;
-    } else {
-      utils::Check(name_map.find(node_name) != name_map.end(),
-                   "ExtractFeature: Cannot find node name: %s", node_name.c_str());
-      node_id = name_map[node_name];
+  
+  virtual void PredictTopK( std::vector< std::pair<float,index_t> > &preds, const DataBatch& batch, index_t topk ) {
+    std::vector<std::pair<int, mshadow::TensorContainer<cpu, 4> > > req;
+    req.push_back(std::make_pair(nets_[0]->net().nodes.size() - 1, out_temp));
+    mshadow::Shape<4> s = nets_[0]->net().nodes.back().data.shape_;
+    s[0] = batch_size;
+    req[0].second.Resize(s);
+    this->ForwardTo(req, data);
+
+    utils::Assert( topk <= temp.shape[0], "topk must be smaller than number of classes");
+    std::vector< std::pair<float,index_t> > vec( temp.shape[0] );
+    for( index_t i = 0; i <temp.shape[1]; ++i ){
+        for( index_t j = 0; j < temp.shape[0]; ++ j ){
+            vec[j] = std::make_pair( temp[i][j], j );
+        }
+        utils::Shuffle( vec );
+        std::sort( vec.begin(), vec.end(), CmpScore );
+        for( int i = 0; i < topk; ++ i ){
+            preds.push_back( vec[i] );
+        }
+      }
     }
+  
+  virtual void FeatureExtract( std::vector<std::vector< double> > & feats,
+                              const DataBatch &batch,
+                              size_t layer_id) {
+    int node_id, offset;
+    node_id = nnode - layer_id;
     std::vector <std::pair<int, mshadow::TensorContainer<cpu, 4> > > req;
     req.push_back(std::make_pair(node_id, *out_preds));
     mshadow::Shape<4> s = nets_[0]->net().nodes[node_id].data.shape_;
     s[0] = batch_size;
     req[0].second.Resize(s);
     this->ForwardTo(req, batch);
-    *out_preds = req[0].second;
+    for (index_t i < batch_size; ++i){
+      feats.push_back( this->TransformFeat(req[0].second[i][0][0]));
+    }
   }
   virtual std::string PrintTrainEvaluate(){
     return train_metric.Print("train");
@@ -384,6 +396,14 @@ class CXXNetThreadTrainer : public GLINetTrainer {
       return pred[0];
     }
   }
+  inline std::vector<double> TransformFeat( mshadow_old::Tensor<cpu,1> feat ){
+    std::vector<double> ret;
+    for (index_t i = 0; i < feat.shape[0]; ++i ){
+        ret.push_back(feat[i]);
+    }
+    return ret;
+  }
+
   inline static int GetMaxIndex(mshadow::Tensor<cpu,1> pred) {
     index_t maxidx = 0;
     for(index_t i = 1; i < pred.size(0); ++ i) {

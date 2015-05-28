@@ -53,20 +53,16 @@ class INetTrainer{
    * \param out_preds the prediction result for each data sample
    * \param batch the data to be predicted
    */
-  virtual void Predict(mshadow::TensorContainer<mshadow::cpu, 1> *out_preds,
-                       const DataBatch &batch) = 0;
-
-  //TODO Actually implement
-  virtual void Predict(std::vector<float> out_preds, const DataBatch &batch) {}
+  virtual void Predict(std::vector<float> out_preds, const DataBatch &batch) = 0;
   /*!
    * \brief extract the content of a node for a given data batch
    * \param out_preds the content for each data sample in the node
    * \param batch the data to be passed
    * \param node_name the name of the node to be extracted
    */
-  virtual void ExtractFeature(mshadow::TensorContainer<mshadow::cpu, 4> *out_preds,
+  virtual void FeatureExtract(std::vector<std::vector< double> > & feats,
                               const DataBatch &batch,
-                              const char *node_name) = 0;
+                              size_t layer_id *node_name) = 0;
   /*!
    * \brief Initialize current model from a input stream.
    *  This method will copy the weight from corresponding layers if their names match.
