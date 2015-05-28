@@ -227,7 +227,6 @@ class CXXNetThreadTrainer : public GLINetTrainer {
         for( index_t j = 0; j < req[0].second.size(3); ++ j ){
             vec[j] = std::make_pair( this->req[0].second[i][0][0][j], j );
         }
-        utils::RandomSampler::Shuffle( vec, req[0].second.size(3) );
         std::sort( vec.begin(), vec.end(), CmpScore );
         for( int i = 0; i < topk; ++ i ){
             preds.push_back( vec[i] );
@@ -242,12 +241,12 @@ class CXXNetThreadTrainer : public GLINetTrainer {
     int nnode = static_cast<int>(nets_[0]->net().nodes.size());
     node_id = nnode - layer_id;
     std::vector <std::pair<int, mshadow::TensorContainer<cpu, 4> > > req;
-    req.push_back(std::make_pair(node_id, *out_preds));
+    req.push_back(std::make_pair(node_id, out_temp));
     mshadow::Shape<4> s = nets_[0]->net().nodes[node_id].data.shape_;
     s[0] = batch_size;
     req[0].second.Resize(s);
     this->ForwardTo(req, batch);
-    for (index_t i < batch_size; ++i){
+    for (index_t i; < batch_size; ++i){
       feats.push_back( this->TransformFeat(req[0].second[i][0][0]));
     }
   }
@@ -404,7 +403,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
   }
   inline std::vector<double> TransformFeat( mshadow::Tensor<cpu,1> feat ){
     std::vector<double> ret;
-    for (index_t i = 0; i < feat.shape[0]; ++i ){
+    for (index_t i = 0; i < feat.size(0); ++i ){
         ret.push_back(feat[i]);
     }
     return ret;
