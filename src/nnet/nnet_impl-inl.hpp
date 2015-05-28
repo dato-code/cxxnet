@@ -227,7 +227,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
         for( index_t j = 0; j < req[0].second.size(3); ++ j ){
             vec[j] = std::make_pair( this->req[0].second[i][0][0][j], j );
         }
-        utils::Shuffle( vec );
+        utils::Shuffle( vec, req[0].second.size(3) );
         std::sort( vec.begin(), vec.end(), CmpScore );
         for( int i = 0; i < topk; ++ i ){
             preds.push_back( vec[i] );
@@ -238,7 +238,8 @@ class CXXNetThreadTrainer : public GLINetTrainer {
   virtual void FeatureExtract( std::vector<std::vector< double> > & feats,
                               const DataBatch &batch,
                               size_t layer_id) {
-    int node_id, offset;
+    int node_id;
+    int nnode = static_cast<int>(nets_[0]->net().nodes.size());
     node_id = nnode - layer_id;
     std::vector <std::pair<int, mshadow::TensorContainer<cpu, 4> > > req;
     req.push_back(std::make_pair(node_id, *out_preds));
