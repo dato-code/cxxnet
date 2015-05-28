@@ -213,7 +213,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
     }
   }
   
-  virtual void PredictTopK( std::vector< std::pair<float,index_t> > &preds, const DataBatch& batch, index_t topk ) {
+  virtual void PredictTopK( std::vector< std::pair<float,index_t> > &preds, const DataBatch& data, index_t topk ) {
     std::vector<std::pair<int, mshadow::TensorContainer<cpu, 4> > > req;
     req.push_back(std::make_pair(nets_[0]->net().nodes.size() - 1, out_temp));
     mshadow::Shape<4> s = nets_[0]->net().nodes.back().data.shape_;
