@@ -9,7 +9,8 @@ template<>
 GLINetTrainer* CreateNet<cpu>(int net_type) {
   return CreateNet_<cpu>(net_type);
 }
-#if MSHADOW_USE_CUDA == 0 
+#if MSHADOW_USE_CUDA == 0
+template<>
 GLINetTrainer* CreateNet<gpu>(int net_type) {
   utils::Error("CUDA is not supported");
   return NULL;
