@@ -127,9 +127,9 @@ struct MetricError : public MetricBase{
 /*! \brief accuracy */
 struct MetricAccuracy : public MetricBase{
  public:
-  MetricError(void) : MetricBase("accuracy") {
+  MetricAccuracy(void) : MetricBase("accuracy") {
   }
-  virtual ~MetricError(void) {}
+  virtual ~MetricAccuracy(void) {}
  protected:
   virtual float CalcMetric(const mshadow::Tensor<cpu,1> &pred,
     const mshadow::Tensor<cpu,1> &label) {
