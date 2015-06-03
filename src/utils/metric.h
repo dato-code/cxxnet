@@ -124,6 +124,27 @@ struct MetricError : public MetricBase{
   }
 };
 
+/*! \brief accuracy */
+struct MetricAccuracy : public MetricBase{
+ public:
+  MetricError(void) : MetricBase("accuracy") {
+  }
+  virtual ~MetricError(void) {}
+ protected:
+  virtual float CalcMetric(const mshadow::Tensor<cpu,1> &pred,
+    const mshadow::Tensor<cpu,1> &label) {
+    index_t maxidx = 0;
+    if (pred.size(0) != 1) {
+      for (index_t i = 1; i < pred.size(0); ++ i) {
+        if (pred[i] > pred[maxidx]) maxidx = i;
+      }
+    }else{
+      maxidx = pred[0] > 0.0 ? 1 : 0;
+    }
+    return maxidx ==(index_t)label[0];
+  }
+};
+
 /*! \brief Logloss */
 struct MetricLogloss : public MetricBase{
  public:
@@ -263,6 +284,7 @@ struct MetricSet{
   static IMetric* Create(const char *name) {
     if (!strcmp(name, "rmse")) return new MetricRMSE();
     if (!strcmp(name, "error")) return new MetricError();
+    if (!strcmp(name, "accuracy")) return new MetricError();
     if (!strcmp(name, "logloss")) return new MetricLogloss();
     if (!strncmp(name, "rec@",4)) return new MetricRecall(name);
     if (!strcmp(name, "confusion_matrix" )) return new MetricConfusionMatrix();
