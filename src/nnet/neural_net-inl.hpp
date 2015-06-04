@@ -239,7 +239,7 @@ struct NeuralNet {
     nodes.resize(cfg.param.num_nodes);
     mshadow::Shape<3> s = cfg.param.input_shape;
     // setup input shape
-    if nodes(nodes.size() > 0){
+    if (nodes.size() > 0){
       nodes[0].data.shape_ = mshadow::Shape4(max_batch, s[0], s[1], s[2]);
     }
     // setup extra data
