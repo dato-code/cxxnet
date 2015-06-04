@@ -497,7 +497,10 @@ class NeuralNetThread {
   };
   // thread related code
   inline static CXXNET_THREAD_PREFIX ThreadEntry(void *pthread) {
-    static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
+    try {
+      static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
+    } catch (...) {
+    }
     utils::ThreadExit(NULL);
     return NULL;
   }
