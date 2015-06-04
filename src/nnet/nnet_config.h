@@ -204,10 +204,11 @@ struct NetConfig {
    */
   inline void Configure(const std::vector< std::pair<std::string, std::string> > &cfg) {
     this->ClearConfig();
-    if (node_names.size() == 0 && node_name_map.size() == 0) {
-      node_names.push_back(std::string("in"));
-      node_name_map["in"] = 0;
-    }
+    //Removed since it's breaking checks -PT
+    //if (node_names.size() == 0 && node_name_map.size() == 0) {
+    //  node_names.push_back(std::string("in"));
+    //  node_name_map["in"] = 0;
+    //}
     node_name_map["0"] = 0;
     // whether in net config mode
     int netcfg_mode = 0;
