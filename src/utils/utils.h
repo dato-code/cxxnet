@@ -54,13 +54,13 @@ inline void HandlePrint(const char *msg) {
   printf("%s", msg);
 }
 #elif USE_GRAPHLAB_LOGGING
-void HandleAssertError(const char *msg){
+inline void HandleAssertError(const char *msg){
   graphlab::handle_error(msg);
 }
-void HandleCheckError(const char *msg){
+inline void HandleCheckError(const char *msg){
   graphlab::handle_error(msg);
 }
-void HandlePrint(const char *msg){
+inline void HandlePrint(const char *msg){
   graphlab::handle_print(msg);
 }
 #else
