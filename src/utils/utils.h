@@ -18,6 +18,12 @@
 
 //#define CUDA_CHECK(ARGS) CHECK(ARGS==0);
 
+#if USE_GRAPHLAB_LOGGING
+namespace graphlab{
+  void handle_error(const char* msg);
+}
+#endif
+
 namespace cxxnet {
 /*! \brief include dmlc objects in cxxnet interface */
 using namespace dmlc;
@@ -45,6 +51,16 @@ inline void HandleCheckError(const char *msg) {
 }
 inline void HandlePrint(const char *msg) {
   printf("%s", msg);
+}
+#elif USE_GRAPHLAB_LOGGING
+void HandleAssertError(const char *msg){
+  graphlab::handle_error(msg);
+}
+void HandleCheckError(const char *msg){
+  graphlab::handle_error(msg);
+}
+void HandlePrint(const char *msg){
+  graphlab::handle_print(msg);
 }
 #else
 // include declarations, some one must implement this
