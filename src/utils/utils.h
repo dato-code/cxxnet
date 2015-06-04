@@ -21,6 +21,7 @@
 #if USE_GRAPHLAB_LOGGING
 namespace graphlab{
   void handle_error(const char* msg);
+  void handle_print(const char* msg);
 }
 #endif
 
