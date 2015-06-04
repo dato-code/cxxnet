@@ -80,7 +80,6 @@ class Semaphore {
     sema_name[2]='e'; 
     sema_name[3]='/'; 
     GenRandomString(&sema_name[4], 16);
-    sym_unlink(sema_name)
     if((semPtr = sem_open(sema_name, O_CREAT, 0644, init_val)) == SEM_FAILED) {
       perror("sem_open");
       exit(1);
