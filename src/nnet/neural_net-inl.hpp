@@ -342,7 +342,6 @@ class NeuralNetThread {
       destroy_signal = false;
       job_start.Init(0);
       job_end.Init(0);
-      log_and_throw("blah");
       worker_thread.Start(ThreadEntry, this);
       // wait until net is created
       job_end.Wait();
@@ -369,18 +368,16 @@ class NeuralNetThread {
     }
   }
 
-  inline void HandleException(void){
-    if (exception){
-        log_and_throw(exception_string);
-    }
-  }
-
   /*!
    * \brief wait till the the thread finishes current task
    * This function MUST be called every time before running next job
    */
   inline void WaitJob(void) {
     if (new_thread) job_end.Wait();
+    if (exception){
+        HandleAssertError(exception_string);
+    }
+
   }
   inline void InitModel(void) {
     this->task = kInitModel;
@@ -508,7 +505,8 @@ class NeuralNetThread {
       static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
     } catch (std::string s) {
       static_cast<NeuralNetThread<xpu>*>(pthread)->exception = true;
-      static_cast<NeuralNetThread<xpu>*>(pthread)->exception_string = s; 
+      static_cast<NeuralNetThread<xpu>*>(pthread)->exception_string = s;
+      static_cast<NeuralNetThread<xpu>*>(pthread)->job_end.Post(); 
     }
     utils::ThreadExit(NULL);
     return NULL;
