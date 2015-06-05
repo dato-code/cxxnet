@@ -375,7 +375,7 @@ class NeuralNetThread {
   inline void WaitJob(void) {
     if (new_thread) job_end.Wait();
     if (exception){
-        ::cxxnet::HandleAssertError(exception_string.c_str());
+        utils::HandleAssertError(exception_string.c_str());
     }
 
   }
