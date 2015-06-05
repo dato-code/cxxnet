@@ -499,12 +499,12 @@ class NeuralNetThread {
     kSyncParam
   };
   // thread related code
-  inline CXXNET_THREAD_PREFIX ThreadEntry(void *pthread) {
+  inline static CXXNET_THREAD_PREFIX ThreadEntry(void *pthread) {
     try {
       static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
     } catch (std::string s) {
-      exception = true;
-      exception_string = s;
+      static_cast<NeuralNetThread<xpu>*>(pthread)->exception = true;
+      static_cast<NeuralNetThread<xpu>*>(pthread)->exception_string = s;
     }
     utils::ThreadExit(NULL);
     return NULL;
