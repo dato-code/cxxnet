@@ -344,10 +344,10 @@ class NeuralNetThread {
       job_end.Init(0);
       worker_thread.Start(ThreadEntry, this);
       // wait until net is created
-      job_end.Wait();
       if (exception){
         log_and_throw(exception_string);
       }
+      job_end.Wait();
     } else {
       mshadow::InitTensorEngine<xpu>(device_id);
       stream = mshadow::NewStream<xpu>();
