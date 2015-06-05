@@ -345,6 +345,9 @@ class NeuralNetThread {
       worker_thread.Start(ThreadEntry, this);
       // wait until net is created
       job_end.Wait();
+      if (exception){
+        log_and_throw(exception_string);
+      }
     } else {
       mshadow::InitTensorEngine<xpu>(device_id);
       stream = mshadow::NewStream<xpu>();
@@ -500,7 +503,8 @@ class NeuralNetThread {
     try {
       static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
     } catch (std::string s) {
-      log_and_throw(s);
+      exception = true;
+      excpetion_string = s;
     }
     utils::ThreadExit(NULL);
     return NULL;
@@ -648,6 +652,10 @@ class NeuralNetThread {
   bool destroy_signal;
   // signal of jobs
   utils::Semaphore job_end, job_start;
+  // Exception bool
+  bool exception;
+  // Exception string
+  std::string exception_string
   // thread object
   utils::Thread worker_thread;
   // parameter server
