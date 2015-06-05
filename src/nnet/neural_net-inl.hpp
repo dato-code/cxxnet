@@ -504,7 +504,7 @@ class NeuralNetThread {
       static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
     } catch (std::string s) {
       exception = true;
-      excpetion_string = s;
+      exception_string = s;
     }
     utils::ThreadExit(NULL);
     return NULL;
