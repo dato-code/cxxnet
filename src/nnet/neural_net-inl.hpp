@@ -655,7 +655,7 @@ class NeuralNetThread {
   // Exception bool
   bool exception;
   // Exception string
-  std::string exception_string
+  std::string exception_string;
   // thread object
   utils::Thread worker_thread;
   // parameter server
