@@ -342,6 +342,7 @@ class NeuralNetThread {
       destroy_signal = false;
       job_start.Init(0);
       job_end.Init(0);
+      log_and_throw("blah");
       worker_thread.Start(ThreadEntry, this);
       // wait until net is created
       job_end.Wait();
@@ -507,7 +508,7 @@ class NeuralNetThread {
       static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
     } catch (std::string s) {
       static_cast<NeuralNetThread<xpu>*>(pthread)->exception = true;
-      static_cast<NeuralNetThread<xpu>*>(pthread)->exception_string = s;
+      static_cast<NeuralNetThread<xpu>*>(pthread)->exception_string = s; 
     }
     utils::ThreadExit(NULL);
     return NULL;
