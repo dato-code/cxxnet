@@ -89,7 +89,7 @@ public:
         for (; top < batch_size_; ++top, ++num_overflow_) {
           if (!base_->Next()){
             base_->BeforeFirst();
-            utils::Assert(base_->Next(), "Input is empty");
+            mshadow::utils::Assert(base_->Next(), "Input is empty");
           }
           const DataInst& d = base_->Value();
           mshadow::Copy(out_.label[top], d.label);
