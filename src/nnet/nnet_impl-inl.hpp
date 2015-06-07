@@ -276,7 +276,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
       if (pserver != NULL) {
         pserver->SetParam("msg:disable_allreduce", "1");
       }    
-      metric.Clear();
+      metrics.Clear();
       iter_eval->BeforeFirst();
       while (iter_eval->Next()) {
         const DataBatch& batch = iter_eval->Value();
@@ -286,7 +286,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
           scores.push_back(eval_req[i].second.Slice(
               0, eval_req[i].second.size(0) - batch.num_batch_padd).FlatTo2D());
         }
-        metric.AddEval(scores, GetLabelInfo(batch));
+        metrics.AddEval(scores, GetLabelInfo(batch));
       }
       // rabit related code for safe guard
       if (pserver != NULL) {
