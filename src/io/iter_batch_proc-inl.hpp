@@ -87,7 +87,10 @@ public:
         num_overflow_ = 0;
         base_->BeforeFirst();
         for (; top < batch_size_; ++top, ++num_overflow_) {
-          CHECK(base_->Next()) << "number of input must be bigger than batch size";
+          if (!base_->Next()){
+            base_->BeforeFirst();
+            utils::Assert(base_->Next(), "Input is empty");
+          }
           const DataInst& d = base_->Value();
           mshadow::Copy(out_.label[top], d.label);
           out_.inst_index[top] = d.index;
