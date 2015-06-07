@@ -82,8 +82,8 @@ class CXXNetThreadTrainer : public GLINetTrainer {
           strcpy(buf, val);
           char* pch = strtok(buf, ",");
           while (pch != NULL) {
-            metric.AddMetric( pch );
-            train_metric.AddMetric( pch );
+            metric.AddMetric( pch , "label");
+            train_metric.AddMetric( pch , "label");
             pch = strtok(NULL, ",");
           }
           delete[] buf;        
