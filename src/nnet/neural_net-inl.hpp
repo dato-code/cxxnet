@@ -334,7 +334,7 @@ class NeuralNetThread {
                   bool new_thread = true)
       : cfg(cfg), pserver(ps),
         device_id(device_id), batch_size(batch_size),
-        seed(seed), new_thread(new_thread) {
+        seed(seed), new_thread(new_thread) exception(false) {
     net_ = NULL;
     if (new_thread) {
       destroy_signal = false;
