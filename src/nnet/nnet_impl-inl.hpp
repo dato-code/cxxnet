@@ -77,7 +77,16 @@ class CXXNetThreadTrainer : public GLINetTrainer {
         metric.AddMetric(val, label_name); train_metric.AddMetric(val, label_name);
         eval_nodes.push_back(std::make_pair(node_name, 0));
       } else {
-        metric.AddMetric(val, "label"); train_metric.AddMetric(val, "label");
+          // manually tokenize
+          char* buf = new char[strlen(val)+1];
+          strcpy(buf, val);
+          char* pch = strtok(buf, ",");
+          while (pch != NULL) {
+            metric.AddMetric( pch );
+            train_metric.AddMetric( pch );
+            pch = strtok(NULL, ",");
+          }
+          delete[] buf;        
         eval_nodes.push_back(std::make_pair("", -1));
       }
     }
