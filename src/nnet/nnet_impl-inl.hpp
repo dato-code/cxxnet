@@ -280,7 +280,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
       }
       
       for (index_t i = 0; i< eval_nodes.size(); ++i){
-        eval_req.push_back(std::make_pair(net_cfg.params.num_nodes-1, 
+        eval_req.push_back(std::make_pair(net_cfg.param.num_nodes-1, 
                                           mshadow::TensorContainer<cpu,4>()));
       }
       
