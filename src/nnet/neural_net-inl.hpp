@@ -375,6 +375,7 @@ class NeuralNetThread {
   inline void WaitJob(void) {
     if (new_thread) job_end.Wait();
     if (exception){
+        //Def shouldn't be in this logic. 
         utils::HandleAssertError(exception_string.c_str());
     }
 
