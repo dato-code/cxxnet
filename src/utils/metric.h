@@ -286,7 +286,7 @@ struct MetricSet{
     if (!strcmp(name, "error")) return new MetricError();
     if (!strcmp(name, "accuracy")) return new MetricAccuracy();
     if (!strcmp(name, "logloss")) return new MetricLogloss();
-    if (!strncmp(name, "rec@",4)) return new MetricRecall(name);
+    if (!strncmp(name, "rec@",4) || ! strncmp(name, "recall@", 7)) return new MetricRecall(name);
     if (!strcmp(name, "confusion_matrix" )) return new MetricConfusionMatrix();
     return NULL;
   }
