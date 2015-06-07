@@ -171,7 +171,7 @@ struct MetricLogloss : public MetricBase{
 struct MetricRecall : public MetricBase {
  public:
   MetricRecall(const char *name) : MetricBase(name) {
-    CHECK(sscanf(name, "rec@%d", &topn) == 1) << "must specify n for rec@n";
+    CHECK(sscanf(name, "rec@%d", &topn) == 1 || sscanf( name, "recall@%d", &topn) == 1) << "must specify n for rec@n";
   }
   virtual ~MetricRecall(void) {}
  protected:
