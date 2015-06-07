@@ -74,7 +74,19 @@ class LRNLayer : public ILayer<xpu> {
           chpool<red::sum>(nodes_out[0]->data * tmp_in * F<op::power>(tmp_norm, -beta_-1.0f), nsize_)  * tmp_in;      
     }
   }
+  virtual void SaveModel(utils::IStream &fo) const{
+    fo.Write( &alpha_, sizeof(real_t) );
+    fo.Write( &beta_, sizeof(real_t) );
+    fo.Write( &knorm_, sizeof(real_t) );
+    fo.Write( &nsize_, sizeof(real_t) );
+  } 
   
+  virtual void LoadModel(utils::IStream &fi){
+    Assert( fi.Read( &alpha_, sizeof(real_t) ) != 0, "load model");
+    Assert( fi.Read( &beta_, sizeof(real_t) ) != 0, "load model");
+    Assert( fi.Read( &knorm_, sizeof(real_t) ) != 0, "load model");
+    Assert( fi.Read( &nsize_, sizeof(real_t) ) != 0, "load model");
+  } 
  private:
   /*! \brief input temp data */
   mshadow::TensorContainer<xpu,4> tmp_in;

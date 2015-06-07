@@ -100,6 +100,14 @@ class PoolingLayer : public ILayer<xpu> {
     }
   }
 
+  virtual void SaveModel(utils::IStream &fo) const{
+    fo.Write(&param_, sizeof(LayerParam) );
+  }
+
+  virtual void LoadModel(utils::IStream &fi){
+    utils::Assert( fi.Read(&param_, sizeof(LayerParam) ) != 0, "load model");
+  }
+
  protected:
   inline void InitNode(const std::vector<Node<xpu>*> &nodes_in,
                        const std::vector<Node<xpu>*> &nodes_out,

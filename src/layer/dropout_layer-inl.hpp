@@ -57,7 +57,13 @@ class DropoutLayer : public ILayer<xpu> {
       nodes_out[0]->data *= mask;
     }    
   }
+  virtual void SaveModel(utils::IStream &fo) const{
+    fo.Write(&dropout_threshold, sizeof(real_t));
+  }
 
+  virtual void LoadModel(utils::IStream &fi){
+    utils::Assert( fi.read(&dropout_threshold, sizeof(real_t) ) != 0, "load model");
+  }
  private:
   /*! \brief random number generator */
   mshadow::Random<xpu> *prnd_;
