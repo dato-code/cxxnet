@@ -519,11 +519,9 @@ class CXXNetThreadTrainer : public GLINetTrainer {
     }
   }
   inline void InitTemp(void) {
-    if (nets_[0]->net().nodes.size() > 0){
       mshadow::Shape<4> oshape = nets_[0]->net().nodes.back().data.shape_;
       oshape[0] = batch_size;
       out_temp.Resize(oshape);
-    }
   }
   inline void FreeNet(void) {
     for (size_t i = 0; i < nets_.size(); ++i) {

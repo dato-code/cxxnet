@@ -204,7 +204,6 @@ struct NetConfig {
    */
   inline void Configure(const std::vector< std::pair<std::string, std::string> > &cfg) {
     this->ClearConfig();
-    //Removed since it's breaking checks -PT
     if (node_names.size() == 0 && node_name_map.size() == 0) {
       node_names.push_back(std::string("in"));
       node_name_map["in"] = 0;
