@@ -501,13 +501,13 @@ class NeuralNetThread {
   };
   // thread related code
   inline static CXXNET_THREAD_PREFIX ThreadEntry(void *pthread) {
-    try {
-      static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
-    } catch (std::string s) {
+//    try {
+    static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
+/*    } catch (std::string s) {
       static_cast<NeuralNetThread<xpu>*>(pthread)->exception = true;
       static_cast<NeuralNetThread<xpu>*>(pthread)->exception_string = s;
       static_cast<NeuralNetThread<xpu>*>(pthread)->job_end.Post(); 
-    }
+    }*/
     utils::ThreadExit(NULL);
     return NULL;
   }
