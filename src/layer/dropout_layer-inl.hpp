@@ -62,7 +62,7 @@ class DropoutLayer : public ILayer<xpu> {
   }
 
   virtual void LoadModel(utils::IStream &fi){
-    utils::Assert( fi.read(&dropout_threshold, sizeof(real_t) ) != 0, "load model");
+    utils::Check( fi.Read(&dropout_threshold, sizeof(real_t) ) != 0, "load model");
   }
  private:
   /*! \brief random number generator */

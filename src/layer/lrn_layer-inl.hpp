@@ -82,10 +82,10 @@ class LRNLayer : public ILayer<xpu> {
   } 
   
   virtual void LoadModel(utils::IStream &fi){
-    Assert( fi.Read( &alpha_, sizeof(real_t) ) != 0, "load model");
-    Assert( fi.Read( &beta_, sizeof(real_t) ) != 0, "load model");
-    Assert( fi.Read( &knorm_, sizeof(real_t) ) != 0, "load model");
-    Assert( fi.Read( &nsize_, sizeof(real_t) ) != 0, "load model");
+    utils::Check( fi.Read( &alpha_, sizeof(real_t) ) != 0, "load model");
+    utils::Check( fi.Read( &beta_, sizeof(real_t) ) != 0, "load model");
+    utils::Check( fi.Read( &knorm_, sizeof(real_t) ) != 0, "load model");
+    utils::Check( fi.Read( &nsize_, sizeof(real_t) ) != 0, "load model");
   } 
  private:
   /*! \brief input temp data */

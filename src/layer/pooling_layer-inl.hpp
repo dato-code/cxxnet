@@ -105,7 +105,7 @@ class PoolingLayer : public ILayer<xpu> {
   }
 
   virtual void LoadModel(utils::IStream &fi){
-    utils::Assert( fi.Read(&param_, sizeof(LayerParam) ) != 0, "load model");
+    utils::Check( fi.Read(&param_, sizeof(LayerParam) ) != 0, "load model");
   }
 
  protected:
