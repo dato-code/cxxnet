@@ -272,8 +272,16 @@ class CXXNetThreadTrainer : public GLINetTrainer {
   std::map<std::string, std::vector<float> > EvalMetrics( IIterator<DataBatch> *iter_eval, const std::vector<std::string>& metric_names) {
 
       utils::MetricSet metrics;
+      eval_nodes.clear();
+      eval_req.clear();
       for (size_t i = 0 ; i < metric_names.size(); ++i) {
         metrics.AddMetric(metric_names[i].c_str(),"label");
+        eval_nodes.push_back(std::make_pair("", -1));
+      }
+      
+      for (index_t i = 0; i< eval_nodes.size(); ++i){
+        eval_req.push_back(std::make_pair(net_cfg.params.num_nodes-1, 
+                                          mshadow::TensorContainer<cpu,4>()));
       }
       
       // explicitly sync parameters
