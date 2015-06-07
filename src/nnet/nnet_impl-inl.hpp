@@ -84,10 +84,10 @@ class CXXNetThreadTrainer : public GLINetTrainer {
           while (pch != NULL) {
             metric.AddMetric( pch , "label");
             train_metric.AddMetric( pch , "label");
+            eval_nodes.push_back(std::make_pair("", -1));
             pch = strtok(NULL, ",");
           }
           delete[] buf;        
-        eval_nodes.push_back(std::make_pair("", -1));
       }
     }
     cfg.push_back(std::make_pair(std::string(name), std::string(val)));
