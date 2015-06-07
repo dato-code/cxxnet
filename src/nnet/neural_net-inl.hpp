@@ -375,7 +375,6 @@ class NeuralNetThread {
   inline void WaitJob(void) {
     if (new_thread) job_end.Wait();
     if (exception){
-        //Def shouldn't be in this logic. 
         utils::HandleAssertError(exception_string.c_str());
     }
 
@@ -502,13 +501,13 @@ class NeuralNetThread {
   };
   // thread related code
   inline static CXXNET_THREAD_PREFIX ThreadEntry(void *pthread) {
-//    try {
+    try {
     static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
-/*    } catch (std::string s) {
+    } catch (std::string s) {
       static_cast<NeuralNetThread<xpu>*>(pthread)->exception = true;
       static_cast<NeuralNetThread<xpu>*>(pthread)->exception_string = s;
       static_cast<NeuralNetThread<xpu>*>(pthread)->job_end.Post(); 
-    }*/
+    }
     utils::ThreadExit(NULL);
     return NULL;
   }
