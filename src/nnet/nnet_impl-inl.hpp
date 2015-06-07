@@ -285,7 +285,6 @@ class CXXNetThreadTrainer : public GLINetTrainer {
       if (pserver != NULL) {
         pserver->SetParam("msg:disable_allreduce", "1");
       }    
-      metrics.Clear();
       iter_eval->BeforeFirst();
       while (iter_eval->Next()) {
         const DataBatch& batch = iter_eval->Value();
