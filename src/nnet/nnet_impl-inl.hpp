@@ -283,7 +283,8 @@ class CXXNetThreadTrainer : public GLINetTrainer {
         eval_req.push_back(std::make_pair(net_cfg.param.num_nodes-1, 
                                           mshadow::TensorContainer<cpu,4>()));
       }
-      
+     
+      this->InitEvalReq(eval_req);
       // explicitly sync parameters
       for (size_t i = 0; i < nets_.size(); ++i) {
         nets_[i]->SyncParam();
