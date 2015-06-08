@@ -78,14 +78,14 @@ class LRNLayer : public ILayer<xpu> {
     fo.Write( &alpha_, sizeof(real_t) );
     fo.Write( &beta_, sizeof(real_t) );
     fo.Write( &knorm_, sizeof(real_t) );
-    fo.Write( &nsize_, sizeof(real_t) );
+    fo.Write( &nsize_, sizeof(index_t) );
   } 
   
   virtual void LoadModel(utils::IStream &fi){
     utils::Check( fi.Read( &alpha_, sizeof(real_t) ) != 0, "load model");
     utils::Check( fi.Read( &beta_, sizeof(real_t) ) != 0, "load model");
     utils::Check( fi.Read( &knorm_, sizeof(real_t) ) != 0, "load model");
-    utils::Check( fi.Read( &nsize_, sizeof(real_t) ) != 0, "load model");
+    utils::Check( fi.Read( &nsize_, sizeof(index_t) ) != 0, "load model");
   } 
  private:
   /*! \brief input temp data */
