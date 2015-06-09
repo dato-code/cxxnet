@@ -217,7 +217,7 @@ public:
       map.clear();
     }
     virtual void AddEval( const mshadow::Tensor<cpu,2> &predscore, const LabelRecord& labels ) {
-        for( index_t i = 0; i < predscore.size(1); ++ i ){                    
+        for( index_t i = 0; i < predscore.size(0); ++ i ){                    
             CalcMetric( predscore[i], labels.label[i] );
         }
     }
