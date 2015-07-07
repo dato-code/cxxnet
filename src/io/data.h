@@ -9,6 +9,7 @@
 #include <string>
 #include <mshadow/tensor.h>
 #include "../utils/utils.h"
+#include "../utils/code_optimization.hpp"
 
 namespace cxxnet {
 /*!
@@ -142,11 +143,26 @@ public:
       mshadow::FreeSpace(&extra_data[i]);
     }
   }
+
   /*! \brief copy dense content from existing data, dense only */
-  void CopyFromDense(const DataBatch &src);
+  void CopyFromDense(const DataBatch &src) GL_HOT {
+    /* DASSERT_EQ(batch_size == src.batch_size); */
+    num_batch_padd = src.num_batch_padd;
+    /* DASSERT_MSG(src.inst_index != NULL, "CopyFromDense need to copy instance index"); */
+    memcpy(inst_index, src.inst_index, batch_size * sizeof(unsigned));
+    /* DASSERT_EQ(data.shape_ == src.data.shape_); */
+    /* DASSERT_EQ(label.shape_ == src.label.shape_); */
+    mshadow::Copy(label, src.label);
+    mshadow::Copy(data, src.data);
+    /* DASSERT_EQ(extra_data.size() == src.extra_data.size()); */
+    for (mshadow::index_t i = 0; i < extra_data.size(); ++i){
+      /* DASSERT_EQ(label.shape_ == src.label.shape_); */
+      mshadow::Copy(extra_data[i], src.extra_data[i]);
+    }
+  }
     
    
-   public:
+ public:
   /*! \brief helper function to check if a element is sparse */
   inline bool is_sparse(void) const {
     return sparse_row_ptr != NULL;

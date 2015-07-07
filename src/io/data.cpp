@@ -93,24 +93,4 @@ IIterator<DataBatch> *CreateIterator(const std::vector< std::pair<std::string, s
   return it;
 }
 
-/*! \brief copy dense content from existing data, dense only */
-void CopyFromDense(const DataBatch &src) {
-    CHECK(batch_size == src.batch_size)
-        << "DataBatch: the batch size is not set correctly";
-    num_batch_padd = src.num_batch_padd;
-    utils::Check(src.inst_index != NULL, "CopyFromDense need to copy instance index");
-    memcpy(inst_index, src.inst_index, batch_size * sizeof(unsigned));
-    CHECK(data.shape_ == src.data.shape_) << "DataBatch: data shape mismatch";
-    CHECK(label.shape_ == src.label.shape_) << "DataBatch: label shape mismatch";
-    mshadow::Copy(label, src.label);
-    mshadow::Copy(data, src.data);
-    CHECK(extra_data.size() == src.extra_data.size())
-        << "DataBatch: extra data number mismatch";
-    for (mshadow::index_t i = 0; i < extra_data.size(); ++i){
-      CHECK(label.shape_ == src.label.shape_)
-          << "DataBatch: extra data " << i << " shape mismatch";
-      mshadow::Copy(extra_data[i], src.extra_data[i]);
-    }
-  }
-
 } // namespace cxxnet
