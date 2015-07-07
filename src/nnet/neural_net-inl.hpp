@@ -12,7 +12,7 @@
 #include "../layer/layer.h"
 #include "../layer/visitor.h"
 #include "../updater/updater.h"
-#include "../utils/utils.h"
+#include "../utils/code_optimization.hpp"
 #include "../utils/io.h"
 #include "../utils/thread.h"
 #include "./nnet_config.h"
@@ -112,7 +112,7 @@ struct NeuralNet {
   inline void Forward(bool is_train,
                       mshadow::Tensor<cpu,4> batch,
                       std::vector<mshadow::Tensor<cpu,4> > extra_data,
-                      bool need_sync) {
+                      bool need_sync) GL_HOT_INLINE_FLATTEN {
     // check if we need to adjust batch size according to the input
     this->AdjustBatchSize(batch.size(0));
     // copy data into node
@@ -141,7 +141,7 @@ struct NeuralNet {
    */
   inline void Backprop(bool prop_to_input,
                        bool need_update,
-                       long update_epoch) {
+                       long update_epoch) GL_HOT_INLINE_FLATTEN {
     for (size_t i = connections.size(); i > 0; --i) {
       layer::Connection<xpu> &c = connections[i - 1];
       for (size_t j = 0; j < updaters[i - 1].size(); ++j) {
