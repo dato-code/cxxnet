@@ -19,11 +19,10 @@
 #endif
 
 namespace cxxnet {
-/*! \brief create a batch iterator from single instance iterator */
-class AugmentIterator: public IIterator<DataInst> {
-public:
-  AugmentIterator(IIterator<DataInst> *base, int no_aug=0)
-      : base_(base), no_aug_(no_aug) {
+
+class ImageAugmenter {
+ public:
+  ImageAugmenter() {
     rand_crop_ = 0;
     rand_mirror_ = 0;
     crop_y_start_ = -1;
@@ -43,11 +42,8 @@ public:
     max_random_contrast_ = 0.0f;
     rnd.Seed(kRandMagic);
   }
-  virtual ~AugmentIterator(void) {
-    delete base_;
-  }
-  virtual void SetParam(const char *name, const char *val) {
-    base_->SetParam(name, val);
+
+  void SetParam(const char *name, const char *val) {
     if (!strcmp(name, "input_shape")) {
       utils::Check(sscanf(val, "%u,%u,%u", &shape_[0], &shape_[1], &shape_[2]) == 3,
                    "input_shape must be three consecutive integers without space example: 1,1,200 ");
@@ -72,12 +68,12 @@ public:
     aug.SetParam(name, val);
 #endif
   }
-  virtual void Init(void) {
-    base_->Init();
-    if (name_meanimg_.length() != 0) {
+
+  void Init(IIterator<DataInst>* iter = nullptr) {
+    if (name_meanimg_.length() != 0 && iter != nullptr) {
       dmlc::Stream *fi = dmlc::Stream::Create(name_meanimg_.c_str(), "r", true);
       if (fi == NULL) {
-        this->CreateMeanImg();
+        this->CreateMeanImg(iter);
       } else {
         if (silent_ == 0) {
           printf("loading mean image from %s\n", name_meanimg_.c_str());
@@ -88,27 +84,41 @@ public:
       }
     }
   }
-  virtual void BeforeFirst(void) {
-    base_->BeforeFirst();
-  }
-  virtual const DataInst &Value(void) const {
-    return out_;
-  }
-  virtual bool Next(void) {
-    if (!this->Next_()) return false;
-    return true;
+
+  void CreateMeanImg(IIterator<DataInst>* iter) {
+    if (silent_ == 0) {
+      printf("cannot find %s: create mean image, this will take some time...\n", name_meanimg_.c_str());
+    }
+    time_t start = time(NULL);
+    unsigned long elapsed = 0;
+    size_t imcnt = 1;
+
+    meanimg_.Resize(mshadow::Shape3(shape_[0], shape_[1], shape_[2]));
+    mshadow::Copy(meanimg_, img_);
+    while (iter->Next()) {
+      meanimg_ += img_; imcnt += 1;
+      elapsed = (long)(time(NULL) - start);
+      if (imcnt % 1000 == 0 && silent_ == 0) {
+        printf("\r                                                               \r");
+        printf("[%8lu] images processed, %ld sec elapsed", imcnt, elapsed);
+        fflush(stdout);
+      }
+    }
+    meanimg_ *= (1.0f / imcnt);
+
+    dmlc::Stream *fo = dmlc::Stream::Create(name_meanimg_.c_str(), "w");
+    meanimg_.SaveBinary(*fo);
+    delete fo;
+    if (silent_ == 0) {
+      printf("save mean image to %s..\n", name_meanimg_.c_str());
+    }
+    meanfile_ready_ = true;
   }
 
-private:
-  inline void SetData(const DataInst &d) {
+  void TransformImage(mshadow::Tensor<cpu, 3> out_data, mshadow::Tensor<cpu, 3> data) {
+
     using namespace mshadow::expr;
-    out_.label = d.label;
-    out_.index = d.index;
-    mshadow::Tensor<cpu, 3> data = d.data;
-#if CXXNET_USE_OPENCV
-    if (!no_aug_) data = aug.Process(data, &rnd);
-#endif
-
+    
     img_.Resize(mshadow::Shape3(data.shape_[0], shape_[1], shape_[2]));
     if (shape_[1] == 1) {
       img_ = data * scale_;
@@ -162,54 +172,11 @@ private:
         }
       }
     }
-    out_.data = img_;
+    mshadow::Copy(out_data, img_);
   }
-  inline bool Next_(void) {
-    if (!base_->Next()) {
-      return false;
-    }
-    const DataInst &d = base_->Value();
-    this->SetData(d);
-    return true;
-  }
-  inline void CreateMeanImg(void) {
-    if (silent_ == 0) {
-      printf("cannot find %s: create mean image, this will take some time...\n", name_meanimg_.c_str());
-    }
-    time_t start = time(NULL);
-    unsigned long elapsed = 0;
-    size_t imcnt = 1;
-
-    ASSERT_MSG(this->Next_(),"input iterator failed.");
-    meanimg_.Resize(mshadow::Shape3(shape_[0], shape_[1], shape_[2]));
-    mshadow::Copy(meanimg_, img_);
-    while (this->Next()) {
-      meanimg_ += img_; imcnt += 1;
-      elapsed = (long)(time(NULL) - start);
-      if (imcnt % 1000 == 0 && silent_ == 0) {
-        printf("\r                                                               \r");
-        printf("[%8lu] images processed, %ld sec elapsed", imcnt, elapsed);
-        fflush(stdout);
-      }
-    }
-    meanimg_ *= (1.0f / imcnt);
-
-    dmlc::Stream *fo = dmlc::Stream::Create(name_meanimg_.c_str(), "w");
-    meanimg_.SaveBinary(*fo);
-    delete fo;
-    if (silent_ == 0) {
-      printf("save mean image to %s..\n", name_meanimg_.c_str());
-    }
-    meanfile_ready_ = true;
-    this->BeforeFirst();
-  }
-private:
-  /*! \brief base iterator */
-  IIterator<DataInst> *base_;
+  
   /*! \brief input shape */
   mshadow::Shape<4> shape_;
-  /*! \brief output data */
-  DataInst out_;
   /*! \brief silent */
   int silent_;
   /*! \brief scale of data */
@@ -242,7 +209,6 @@ private:
   int mirror_;
   /*! \brief whether mean file is ready */
   bool meanfile_ready_;
-  int no_aug_;
   // augmenter
 #if CXXNET_USE_OPENCV
   ImageAugmenter aug;
@@ -251,6 +217,68 @@ private:
   utils::RandomSampler rnd;
   // random magic number of this iterator
   static const int kRandMagic = 0;
+  
+}; 
+
+
+
+/*! \brief create a batch iterator from single instance iterator */
+class AugmentIterator: public IIterator<DataInst> {
+public:
+  AugmentIterator(IIterator<DataInst> *base, int =0)
+      : base_(base) {
+  }
+  
+  virtual ~AugmentIterator(void) {
+    delete base_;
+  }
+  virtual void SetParam(const char *name, const char *val) {
+    base_->SetParam(name, val);
+    augmenter.SetParam(name, val); 
+  }
+  virtual void Init(void) {
+    base_->Init();
+    augmenter.Init(this); 
+  }
+  virtual void BeforeFirst(void) {
+    base_->BeforeFirst();
+  }
+  virtual const DataInst &Value(void) const {
+    return out_;
+  }
+  virtual bool Next(void) {
+    if (!this->Next_()) return false;
+    return true;
+  }
+
+private:
+  inline void SetData(const DataInst &d) {
+    using namespace mshadow::expr;
+    out_.label = d.label;
+    out_.index = d.index;
+    augmenter.TransformImage(out_.data, d.data); 
+  }
+  inline bool Next_(void) {
+    if (!base_->Next()) {
+      return false;
+    }
+    const DataInst &d = base_->Value();
+    this->SetData(d);
+    return true;
+  }
+  inline void CreateMeanImg(void) {
+    ASSERT_MSG(this->Next_(),"input iterator failed.");
+    augmenter.CreateMeanImg(this);
+    this->BeforeFirst();
+  }
+  
+private:
+  /*! \brief base iterator */
+  IIterator<DataInst> *base_;
+
+  ImageAugmenter augmenter;
+  /*! \brief input shape */
+  DataInst out_;
 };  // class AugmentIterator
 }  // namespace cxxnet
 #endif
