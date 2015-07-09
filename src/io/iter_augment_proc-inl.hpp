@@ -115,6 +115,10 @@ class ImageAugmenter {
     meanfile_ready_ = true;
   }
 
+  mshadow::Shape<3> GetOutputShape() const {
+    return mshadow::Shape3(shape_[0], shape_[1], shape_[2]);
+  }
+
   void TransformImage(mshadow::Tensor<cpu, 3> out_data, mshadow::Tensor<cpu, 3> data) {
 
     using namespace mshadow::expr;
