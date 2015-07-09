@@ -82,18 +82,18 @@ class Semaphore {
     GenRandomString(&sema_name[4], 16);
     if((semPtr = sem_open(sema_name, O_CREAT, 0644, init_val)) == SEM_FAILED) {
       perror("sem_open");
-      exit(1);
+      throw std::string("semaphore open error.");
     }
     mshadow::utils::Assert(semPtr != NULL, "create Semaphore error");
   }
   inline void Destroy(void) {
     if (sem_close(semPtr) == -1) {
       perror("sem_close");
-      exit(EXIT_FAILURE);
+      throw std::string("semaphore close error.");
     }
     if (sem_unlink(sema_name) == -1) {
       perror("sem_unlink");
-      exit(EXIT_FAILURE);
+      throw std::string("semaphore unlink error.");
     }
   }
   inline void Wait(void) {

@@ -39,16 +39,14 @@ const int kPrintBuffer = 1 << 12;
  * \param msg error message
  */
 inline void HandleAssertError(const char *msg) {
-  fprintf(stderr, "AssertError:%s\n", msg);
-  exit(-1);
+  throw(std::string("AssertError: ") + msg);
 }
 /*!
  * \brief handling of Check error, caused by in-apropriate input
  * \param msg error message
  */
 inline void HandleCheckError(const char *msg) {
-  fprintf(stderr, "%s\n", msg);
-  exit(-1);
+  throw(std::string("Error: ") + msg);
 }
 inline void HandlePrint(const char *msg) {
   printf("%s", msg);
