@@ -176,7 +176,8 @@ class ImageAugmenter {
         }
       }
     }
-    mshadow::Copy(out_data, img_);
+    if(out_data.dptr_ != img_.dptr_)
+      mshadow::Copy(out_data, img_);
   }
   
   /*! \brief input shape */
