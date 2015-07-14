@@ -532,14 +532,14 @@ class CXXNetThreadTrainer : public GLINetTrainer {
       out_temp.Resize(oshape);
   }
   inline void FreeNet(void) {
-    for (size_t i = 0; i < nets_.size(); ++i) {
-      delete nets_[i];
-    }
-    nets_.clear();
     if (pserver != NULL) {
       delete pserver;
       pserver = NULL;
     }
+    for (size_t i = 0; i < nets_.size(); ++i) {
+      delete nets_[i];
+    }
+    nets_.clear();
   }
   inline void InitEvalReq(
     std::vector<std::pair<int, mshadow::TensorContainer<cpu, 4> > >& req) {
