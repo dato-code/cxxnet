@@ -7,7 +7,7 @@
  */
 #include <dmlc/logging.h>
 #include <mshadow/tensor.h>
-#include <cmath>
+#include <math.h>
 #include "./updater.h"
 #include "./param.h"
 
@@ -16,7 +16,7 @@ namespace updater {
 /*! \brief used for gradient clipping and nan detection */
 struct clip {
   MSHADOW_XINLINE static real_t Map(real_t a, real_t b) {
-    if (isnan(a)) return 0.0f;
+    if (std::isnan(a)) return 0.0f;
     if (a < -b) return -b;
     if (a > b) return b;
     return a;
