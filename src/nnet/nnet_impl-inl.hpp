@@ -246,12 +246,17 @@ class CXXNetThreadTrainer : public GLINetTrainer {
   virtual void FeatureExtract( std::vector<std::vector< double> > & feats,
                               const DataBatch &batch,
                               size_t layer_id) {
-    int node_id;
-    int nnode = static_cast<int>(nets_[0]->net().nodes.size());
-    node_id = nnode - layer_id;
+    // translate a layer to a node
+    auto& net = nets_[0]->net();
+    // connections[layer_id].nodes[0] is basically a pointer
+    // into the net.nodes vector
+    // so a little pointer arithmetic gets us the node id
+    // of the connection output
+    int node_id = net.connections[layer_id].nodes_out[0] - &(net.nodes[0]);
+
     std::vector <std::pair<int, mshadow::TensorContainer<cpu, 4> > > req;
     req.push_back(std::make_pair(node_id, out_temp));
-    mshadow::Shape<4> s = nets_[0]->net().nodes[node_id].data.shape_;
+    mshadow::Shape<4> s = net.nodes[node_id].data.shape_;
     s[0] = batch_size;
     req[0].second.Resize(s);
     this->ForwardTo(req, batch);
