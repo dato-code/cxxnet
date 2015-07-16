@@ -359,9 +359,7 @@ class NeuralNetThread {
         job_start.Destroy();
         job_end.Destroy();
       } else {
-        delete net_;
-        mshadow::DeleteStream(stream);
-        mshadow::ShutdownTensorEngine<xpu>();
+        CleanUp();
       }
     }
   }
@@ -375,8 +373,8 @@ class NeuralNetThread {
     if (exception){
         utils::HandleAssertError(exception_string.c_str());
     }
-
   }
+
   inline void InitModel(void) {
     this->task = kInitModel;
     this->ExecTask();
@@ -500,11 +498,12 @@ class NeuralNetThread {
   // thread related code
   inline static CXXNET_THREAD_PREFIX ThreadEntry(void *pthread) {
     try {
-    static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
+      static_cast<NeuralNetThread<xpu>*>(pthread)->RunThread();
     } catch (std::string s) {
       static_cast<NeuralNetThread<xpu>*>(pthread)->exception = true;
       static_cast<NeuralNetThread<xpu>*>(pthread)->exception_string = s;
       static_cast<NeuralNetThread<xpu>*>(pthread)->job_end.Post(); 
+      static_cast<NeuralNetThread<xpu>*>(pthread)->CleanUp();
     }
     utils::ThreadExit(NULL);
     return NULL;
@@ -522,9 +521,15 @@ class NeuralNetThread {
       this->TaskDispatch();
       job_end.Post();
     }
-    delete net_;
-    mshadow::DeleteStream(stream);
-    mshadow::ShutdownTensorEngine<xpu>();
+    CleanUp();
+  }
+  inline void CleanUp(void) {
+    if (net_ != NULL) {
+      delete net_;
+      net_ = NULL;
+      mshadow::DeleteStream(stream);
+      mshadow::ShutdownTensorEngine<xpu>();
+    }
   }
   inline void ExecTask(void) {
     if (new_thread) {
