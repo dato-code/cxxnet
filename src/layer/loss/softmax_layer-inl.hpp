@@ -29,7 +29,7 @@ class SoftmaxLayer: public LossLayerBase<xpu> {
     for (mshadow::index_t i = 0; i < inout_data.size(0); ++i) {
       index_t k = static_cast<index_t>(lb[i][0]);
       inout_data[i][k] -= 1.0f;
-      inout_data[i] *= this->class_weights_vector[i];
+      inout_data[i] *= this->class_weights_vector[k];
     }
   }
 };
