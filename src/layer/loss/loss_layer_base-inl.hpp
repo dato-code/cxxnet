@@ -110,6 +110,12 @@ class LossLayerBase: public ILayer<xpu> {
                           const LabelRecord &label) {
     utils::Error("LossLayerBase::SetGradCPU not implemented");
   }
+
+ protected:
+
+  /*! \brief vector of class weights*/
+  std::vector<double> class_weights_vector;
+ 
  private:
   /*! \brief stream used for internal computation */
   mshadow::Stream<xpu> *stream_;
@@ -124,9 +130,7 @@ class LossLayerBase: public ILayer<xpu> {
   int batch_size;
   /*! \brief string format of class weights */
   std::string class_weights;
-  /*! \brief vector of class weights*/
-  std::vector<double> class_weights_vector;
-  /*! \brief target field of loss */
+ /*! \brief target field of loss */
   std::string target;
   /*! \brief remembered target index in label info */
   size_t target_index;
