@@ -37,7 +37,7 @@ class LossLayerBase: public ILayer<xpu> {
                  "LossLayer: only support 1-1 connection");
     utils::Check(nodes_in[0] == nodes_out[0], "LossLayer is an self-loop Layer");
     CHECK(plabelinfo->name2findex != NULL);
-    int num_labels = nodes_in[0].data.size(3)
+    int num_labels = nodes_in[0]->data.size(3)
     class_weights_vector.resize(num_labels,grad_scale);
     std::map<std::string, size_t>::const_iterator it =
         plabelinfo->name2findex->find(target);
