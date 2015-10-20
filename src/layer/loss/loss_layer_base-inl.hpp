@@ -24,7 +24,10 @@ class LossLayerBase: public ILayer<xpu> {
     if (!strcmp(name, "batch_size")) batch_size = atoi(val);
     if (!strcmp(name, "update_period")) update_period = atoi(val);
     if (!strcmp(name, "target")) target = val;
-    if (!strcmp(name, "grad_scale")) grad_scale = atof(val);
+    if (!strcmp(name, "grad_scale")) {
+      grad_scale = atof(val);
+      class_weights_vector.assign(class_weights_vector.size(), grad_scale);
+    }
     if (!strcmp(name,"class_weights")) class_weights = val;  
   }
   virtual void SetStream(mshadow::Stream<xpu> *stream) {
@@ -38,7 +41,7 @@ class LossLayerBase: public ILayer<xpu> {
     utils::Check(nodes_in[0] == nodes_out[0], "LossLayer is an self-loop Layer");
     CHECK(plabelinfo->name2findex != NULL);
     int num_labels = nodes_in[0]->data.size(3);
-    class_weights_vector.resize(num_labels,grad_scale);
+    class_weights_vector.resize(num_labels);
     std::map<std::string, size_t>::const_iterator it =
         plabelinfo->name2findex->find(target);
     utils::Check(it != plabelinfo->name2findex->end() &&
