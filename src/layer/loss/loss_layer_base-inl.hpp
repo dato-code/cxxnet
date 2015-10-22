@@ -26,8 +26,9 @@ class LossLayerBase: public ILayer<xpu> {
     if (!strcmp(name, "target")) target = val;
     if (!strcmp(name, "grad_scale")) grad_scale = atof(val);
     if (!strcmp(name,"class_weights")) {
+      //using param value as serialization for class weights
       double * num_classes =(double*) val;
-      class_weights_vector.assign(val + sizeof(double), val + (num_classes + 1)*sizeof(double));
+      class_weights_vector.assign(val + sizeof(double), val + ((size_t)*num_classes + (size_t)1)*sizeof(double));
 
     } 
   }
