@@ -278,6 +278,11 @@ struct NetConfig {
         utils::Check(layers[cfg_layer_index - 1].type != layer::kSharedLayer,
                      "please do not set parameters in shared layer, set them in primary layer");
         layercfg[cfg_layer_index - 1].push_back(std::make_pair(std::string(name), std::string(val)));
+      } else if (!strcmp(name,"class_weights")) {
+        //using param value as serialization for class weights
+        double * num_classes =(double*) val;
+        size_t class_weights_string_size = (size_t)(*num_classes + 1)*sizeof(double);
+        defcfg.push_back(std::make_pair(std::string(name), std::string(val, class_weights_string_size)));
       } else {
         defcfg.push_back(std::make_pair(std::string(name), std::string(val)));
       }
