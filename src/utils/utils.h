@@ -123,8 +123,7 @@ inline void TrackerPrint(const std::string msg, bool root_only = true) {
     rabit::TrackerPrint(msg);
   }
 #else
-  fprintf(stderr, "%s", msg.c_str());
-  fflush(stderr);
+  HandlePrint(msg.c_str());
 #endif
 }
 

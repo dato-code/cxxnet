@@ -28,7 +28,6 @@ class LossLayerBase: public ILayer<xpu> {
     if (!strcmp(name,"class_weights")) {
       //using param value as serialization for class weights
       double * num_classes =(double*) val;
-      //class_weights_vector.assign((double*)val + sizeof(double), (double*)val + ((size_t)*num_classes + (size_t)1)*sizeof(double));
       class_weights_vector.assign(num_classes + 1, num_classes + (size_t)*num_classes + 1);
     } 
   }
