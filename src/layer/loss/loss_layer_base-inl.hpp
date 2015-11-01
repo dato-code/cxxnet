@@ -32,7 +32,6 @@ class LossLayerBase: public ILayer<xpu> {
       size_t class_weights_size =static_cast<size_t>(*(reinterpret_cast<const double*>(val)));
       const double* class_weights_pointer = reinterpret_cast<const double*>(val) + 1;
       class_weights_vector.assign(class_weights_pointer, class_weights_pointer + class_weights_size);
-      //class_weights_vector.assign(num_classes + 1, num_classes + (size_t)*num_classes + 1);
     } 
   }
   virtual void SetStream(mshadow::Stream<xpu> *stream) {
