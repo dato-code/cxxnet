@@ -30,7 +30,7 @@ class LossLayerBase: public ILayer<xpu> {
       // First double in contiguous array of double is size of the rest 
       // of the array.
       size_t class_weights_size =static_cast<size_t>(*(reinterpret_cast<const double*>(val)));
-      double* class_weights_pointer = reinterpret_cast<const double*>(val) + 1;
+      const double* class_weights_pointer = reinterpret_cast<const double*>(val) + 1;
       class_weights_vector.assign(class_weights_pointer, class_weights_pointer + class_weights_size);
       //class_weights_vector.assign(num_classes + 1, num_classes + (size_t)*num_classes + 1);
     } 
