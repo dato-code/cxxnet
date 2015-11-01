@@ -569,7 +569,7 @@ class CXXNetThreadTrainer : public GLINetTrainer {
   /*! \brief type of parameter server */
   std::string type_pserver;
   /*! \brief epoch counter */
-  long epoch_counter;
+  int64_t epoch_counter;
   /*! \brief seed to the layers */
   int seed;
   /*! \brief silent*/
