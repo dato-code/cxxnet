@@ -27,8 +27,11 @@ class LossLayerBase: public ILayer<xpu> {
     if (!strcmp(name, "grad_scale")) grad_scale = atof(val);
     if (!strcmp(name,"class_weights")) {
       //using param value as serialization for class weights
-      double * num_classes =(double*) val;
-      class_weights_vector.assign(num_classes + 1, num_classes + (size_t)*num_classes + 1);
+      // First double in contiguous array of double is size of the rest 
+      // of the array.
+      size_t class_weights_size =static_cast<size_t>(*(reinterpret_cast<const double*>(val)));
+      const double* class_weights_pointer = reinterpret_cast<const double*>(val) + 1;
+      class_weights_vector.assign(class_weights_pointer, class_weights_pointer + class_weights_size);
     } 
   }
   virtual void SetStream(mshadow::Stream<xpu> *stream) {
